@@ -1,6 +1,9 @@
 package example.com.model;
 
 import java.math.BigDecimal;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -25,6 +28,7 @@ public class CT_NhapKho {
 
     @ManyToOne
     @JoinColumn(name = "MaNK", insertable = false, updatable = false)
+    @JsonIgnore
     private nhapkho nhapKho;
 
     public CT_NhapKho() {}

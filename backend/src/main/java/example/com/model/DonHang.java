@@ -5,6 +5,8 @@ import java.math.BigDecimal;
 import jakarta.persistence.*;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 
 @Entity
 @Table(name = "donhang")
@@ -22,7 +24,7 @@ public class DonHang {
     private int maNV;
 
     @Column(name = "NgayLap")
-    private LocalDateTime ngayLap;
+    private LocalDateTime ngay_lap;
 
     @Column(name = "TongTien")
     private BigDecimal tongTien;
@@ -32,6 +34,7 @@ public class DonHang {
 
     @ManyToOne
     @JoinColumn(name = "MaKH", insertable = false, updatable = false)
+    @JsonIgnore
     private khachhang khachHang;
 
 
@@ -41,7 +44,7 @@ public class DonHang {
         this.maDH = MaDH;
         this.maKH = MaKH;
         this.maNV = MaNV;
-        this.ngayLap = NgayLap;
+        this.ngay_lap = NgayLap;
         this.tongTien = TongTien;
     }
     // Getters and Setters
@@ -64,10 +67,10 @@ public class DonHang {
         this.maNV = maNV;
     }
     public LocalDateTime getNgayLap() {
-        return ngayLap;
+        return ngay_lap;
     }
     public void setNgayLap(LocalDateTime ngayLap) {
-        this.ngayLap = ngayLap;
+        this.ngay_lap = ngayLap;
     }
     public BigDecimal getTongTien() {
         return tongTien;

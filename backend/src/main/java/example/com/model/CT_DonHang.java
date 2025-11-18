@@ -1,6 +1,8 @@
 package example.com.model;
 import java.math.BigDecimal;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -25,6 +27,7 @@ public class CT_DonHang {
 
     @ManyToOne
     @JoinColumn(name = "MaDH", insertable = false, updatable = false)
+    @JsonIgnore
     private DonHang donHang;
 
     public CT_DonHang() {}
