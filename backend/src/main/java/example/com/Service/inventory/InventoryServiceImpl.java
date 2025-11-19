@@ -1,5 +1,5 @@
 package example.com.Service.inventory;
 
-public class NhapKhoService {
+public class InventoryServiceImpl {
     
 }
