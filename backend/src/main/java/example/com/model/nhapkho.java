@@ -3,6 +3,7 @@ package example.com.model;
 import java.math.BigDecimal;
 import jakarta.persistence.*;
 import java.util.List;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "nhapkho")
@@ -17,11 +18,13 @@ public class nhapkho {
 
     @Column(name = "NhaCungCap")
     private String nhaCungCap;
+    @Column(name = "NgayNhap")
+    private LocalDateTime ngayNhap;
     @Column(name = "TongTien")
     private BigDecimal tongTien;
 
     @OneToMany(mappedBy = "nhapKho", cascade = CascadeType.ALL)
-    private java.util.List<CT_NhapKho> chiTietNhapKhos;
+    private List<CT_NhapKho> chiTietNhapKhos;
 
     public nhapkho() {}
 

@@ -8,5 +8,10 @@ import java.util.List;
 
 
 public interface ChiTietDonHangRepository extends JpaRepository<CT_DonHang, Integer> {
+    // Danh sách chi tiết đơn hàng theo mã đơn hàng
     List<CT_DonHang> findByMaDH(int maDH);
+
+    
 }
+
+

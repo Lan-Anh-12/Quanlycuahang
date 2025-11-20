@@ -27,3 +27,8 @@
 | `getById(id)`             | Thay thế getOne (lazy load)                        |
 | `flush()`                 | Đẩy tất cả thay đổi xuống DB ngay lập tức          |
 mvn spring-boot:run
+
+1. Tạo Entity (ví dụ: User, DonHang)
+2. Tạo Repository (UserRepository, DonHangRepository)
+3. Tạo Service (AuthServiceImpl, DonHangService)
+4. Tạo Controller (AuthController, DonHangController)

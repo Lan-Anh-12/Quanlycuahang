@@ -1,5 +1,14 @@
 package example.com.Repository;
 
-public class ChiTietNhapKhoRepository {
-    
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import example.com.model.CT_NhapKho;
+
+import java.util.List;
+
+public interface ChiTietNhapKhoRepository extends JpaRepository<CT_NhapKho,Integer > {
+    // Danh sách chi tiết nhập kho theo mã nhập kho
+    List<CT_NhapKho> findByMaNK(int maNK);
+
+
 }
