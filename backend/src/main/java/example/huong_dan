@@ -32,3 +32,9 @@ mvn spring-boot:run
 2. Tạo Repository (UserRepository, DonHangRepository)
 3. Tạo Service (AuthServiceImpl, DonHangService)
 4. Tạo Controller (AuthController, DonHangController)
+
+đẩy lên git:
+git add .
+git commit -m " ... "
+git push
+
