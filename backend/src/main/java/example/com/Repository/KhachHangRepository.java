@@ -1,6 +1,7 @@
 package example.com.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,4 +17,10 @@ public interface KhachHangRepository extends JpaRepository<khachhang, Integer> {
 
      // Tìm theo địa chỉ
     List<khachhang> findByDiaChi(String diaChi);
+
+    // tìm theo số đt thoại
+    Optional<khachhang> findBySdt(String sdt);
+
+    // Tìm khách theo khoảng điểm
+    List<khachhang> findByDiemTichLuyBetween(int min, int max);
 }

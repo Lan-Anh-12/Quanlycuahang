@@ -7,20 +7,38 @@ import org.springframework.data.repository.query.Param;
 import example.com.model.DonHang;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
-    // 1. Tìm đơn theo mã KH
+    // Tìm đơn theo mã KH
     List<DonHang> findByMaKH(int MaKH);
 
-     // 2. Tìm đơn theo tháng
+     // Tìm đơn theo tháng
     @Query("SELECT d FROM DonHang d WHERE MONTH(d.ngay_lap) =:month")
     List<DonHang> finByMonth(@Param("month") int month );
 
-    // 3. Tính tổng doanh thu theo tháng
+    //  Tính tổng doanh thu theo tháng
     @Query("SELECT SUM(d.tongTien) FROM DonHang d WHERE MONTH(d.ngayTao) = :month")
     BigDecimal doanhThuTheoThang(@Param("month") int month);
 
-    // 4. Tìm đơn của nhân viên
+    //  Tìm đơn của nhân viên
     List<DonHang> findByMaNV(int maNV);
+
+    // Lấy đơn hàng theo mã (chi tiết 1 đơn)
+    Optional<DonHang> findByMaDH(int maDH);
+
+    // Tìm đơn trong 1 khoảng thời gian
+    List<DonHang> findByNgayLapBetween(LocalDateTime start, LocalDateTime end);
+
+     // Tổng tiền khách đã chi (phục vụ ưu đãi)
+    @Query("SELECT SUM(d.tongTien) FROM DonHang d WHERE d.maKH = :maKH")
+    BigDecimal tongTienChiCuaKhach(@Param("maKH") int maKH);
+
+    // Số lượng đơn khách đã mua
+    @Query("SELECT COUNT(d) FROM DonHang d WHERE d.maKH = :maKH")
+    long soDonHangCuaKhach(@Param("maKH") int maKH);
+
+
 }

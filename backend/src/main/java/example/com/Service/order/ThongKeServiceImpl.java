@@ -1,41 +1,124 @@
-// package example.com.Service.order;
+package example.com.Service.order;
 
-// import org.springframework.beans.factory.annotation.Autowired;
-// import org.springframework.stereotype.Service;
-// import org.springframework.transaction.annotation.Transactional;
+import example.com.Repository.DonHangRepository;
+import example.com.Repository.ChiTietDonHangRepository;
+import example.com.Repository.SanPhamRepository;
+import example.com.Repository.KhachHangRepository;
+import example.com.model.DonHang;
 
-// import example.com.Repository.DonHangRepository;
-// import example.com.Repository.ChiTietDonHangRepository;
-// import example.com.Dto.ThongKeDonHangRequest;
-// import example.com.model.CT_DonHang;
-// import example.com.model.DonHang;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
 
-// import java.util.List;
-// import java.math.BigDecimal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-// @Service
-// @Transactional
-// public class ThongKeServiceImpl implements ThongKeService {
+@Service
+public class ThongKeServiceImpl implements ThongKeService {
 
-//     @Autowired
-//     private DonHangRepository donHangRepo;
+    @Autowired
+    private DonHangRepository donHangRepo;
 
-//     @Autowired
-//     private ChiTietDonHangRepository chiTietDonHangRepo;
+    @Autowired
+    private ChiTietDonHangRepository ctDonRepo;
 
-//     // ... các method hiện có (TaoDonHang, LayDonHangTheoKhachHang, LayChiTietDonHangTheoDonHang)
+    @Autowired
+    private SanPhamRepository sanPhamRepo;
 
-//     @Override
-// public ThongKeDonHangRequest thongKeTheoThang(int month, int year) {
-//     Object[] raw = donHangRepo.doanhThuTheoThang(month, year); 
-//     if (raw == null || raw.length == 0 || raw[0] == null) {
-//         return new ThongKeDonHangRequest(0, 0, BigDecimal.ZERO);
-//     }
-//     int soLuongKhach = ((Number) raw[0]).intValue();
-//     int soLuongDon = ((Number) raw[1]).intValue();
-//     BigDecimal tongDoanhThu = raw[2] == null ? BigDecimal.ZERO : (BigDecimal) raw[2];
+    @Autowired
+    private KhachHangRepository khRepo;
 
-//     return new ThongKeDonHangRequest(soLuongKhach, soLuongDon, tongDoanhThu);
-// }
+   
+    // Thống kê theo tháng
+    
+    @Override
+    public Map<String, Object> thongKeTheoThang(int month, int year) {
 
-// }
+        LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
+        LocalDateTime end = start.plusMonths(1);
+
+        List<DonHang> donTrongThang = donHangRepo.findByNgayLapBetween(start, end);
+
+        long soDon = donTrongThang.size();
+
+        // tính doanh thu
+        var doanhThu = donHangRepo.doanhThuTheoThang(month);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("soDon", soDon);
+        result.put("doanhThu", doanhThu);
+        result.put("donHang", donTrongThang);
+
+        return result;
+    }
+
+   
+    // Thống kê theo khoảng ngày
+    
+    @Override
+    public Map<String, Object> thongKeTheoKhoangNgay(LocalDate start, LocalDate end) {
+
+        LocalDateTime s = start.atStartOfDay();
+        LocalDateTime e = end.atTime(LocalTime.MAX);
+
+        List<DonHang> dons = donHangRepo.findByNgayLapBetween(s, e);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("tongDon", dons.size());
+        result.put("danhSach", dons);
+
+        // doanh thu tính bằng code
+        double doanhThu = dons.stream()
+                .map(d -> d.getTongTien().doubleValue())
+                .reduce(0.0, Double::sum);
+
+        result.put("doanhThu", doanhThu);
+
+        return result;
+    }
+
+   
+    // Thống kê theo nhân viên
+   
+    @Override
+    public Map<String, Object> thongKeTheoNhanVien(int maNV) {
+
+        List<DonHang> dons = donHangRepo.findByMaNV(maNV);
+
+        double doanhThu = dons.stream()
+                .map(d -> d.getTongTien().doubleValue())
+                .reduce(0.0, Double::sum);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("soDon", dons.size());
+        result.put("doanhThu", doanhThu);
+        result.put("donCuaNV", dons);
+
+        return result;
+    }
+
+    
+    // Thống kê theo ngày
+    
+    @Override
+    public Map<String, Object> thongKeTheoNgay(LocalDate date) {
+
+        LocalDateTime start = date.atStartOfDay();
+        LocalDateTime end = date.atTime(LocalTime.MAX);
+
+        List<DonHang> dons = donHangRepo.findByNgayLapBetween(start, end);
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("soDon", dons.size());
+        result.put("danhSach", dons);
+
+        double doanhThu = dons.stream()
+                .map(d -> d.getTongTien().doubleValue())
+                .reduce(0.0, Double::sum);
+
+        result.put("doanhThu", doanhThu);
+
+        return result;
+    }
+}

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import example.com.Repository.TaiKhoanRepository;
 import example.com.model.taikhoan;
+import java.util.Optional;
 
 
 @Service 
@@ -19,7 +20,8 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public String DangNhap(String username, String matkhau) {
         // Tìm tài khoản 
-        taikhoan tk = taiKhoanRepository.findByUsername( username);
+        taikhoan tk = taiKhoanRepository.findByUsername( username)
+        .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
         if( tk == null ) {
             throw new RuntimeException("Tài khoản không tồn tại");
         }
@@ -45,7 +47,8 @@ public class AuthServiceImpl implements AuthService{
         // lấy username
         String username = jwtUtil.extractUsername(refreshToken);
 
-        taikhoan tk = taiKhoanRepository.findByUsername( username);
+        taikhoan tk = taiKhoanRepository.findByUsername( username)
+        .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
         if (tk == null) {
         throw new RuntimeException("Tài khoản không tồn tại");
     }

@@ -53,7 +53,7 @@ public class CT_NhapKho {
         return maNK;
     }
     public void setMaNK(int maNK) {
-        this.maNK = maNK;
+         this.maNK = maNK;
     }
     public int getMaSP() {
         return maSP;
