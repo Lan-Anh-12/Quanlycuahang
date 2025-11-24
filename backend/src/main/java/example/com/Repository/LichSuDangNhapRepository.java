@@ -2,9 +2,8 @@ package example.com.Repository;
 
 import example.com.model.lichsudangnhap;
 
-import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.transaction.annotation.Transactional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

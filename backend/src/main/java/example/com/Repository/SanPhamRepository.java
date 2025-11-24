@@ -13,13 +13,13 @@ import java.util.Optional;
 
 public interface SanPhamRepository extends JpaRepository<sanpham, Integer> {
     // lấy theo tên 
-    List<sanpham> findBytenspContaining( String keyword );
+    List<sanpham> findBytenSPContaining( String keyword );
 
     // lấy theo MoTa
     List<sanpham> findByMoTaContaining( String keyword);
 
     // lấy ra số lượng 
-    @Query("SELECT s.soluong FROM sanpham s WHERE s.maSP = :maSP")
+    @Query("SELECT s.soLuong FROM sanpham s WHERE s.maSP = :maSP")
     Integer getSoLuongByMaSP(int maSP);
 
     // xem còn hàng không 
@@ -31,7 +31,7 @@ public interface SanPhamRepository extends JpaRepository<sanpham, Integer> {
     //cập nhật số lượng
     @Modifying
     @Transactional
-    @Query("UPDATE sanpham s SET s.soLuongTon = s.soLuongTon + :amount WHERE s.maSP = :maSP")
+    @Query("UPDATE sanpham s SET s.soLuong = s.soLuong + :amount WHERE s.maSP = :maSP")
     int tangSoLuong(@Param("maSP") int maSP, @Param("amount") int amount);
     
 }

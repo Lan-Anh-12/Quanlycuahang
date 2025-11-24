@@ -26,7 +26,7 @@ public class nhanvien {
 
     public nhanvien() {}   
 
-    public nhanvien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, int MaTK) {
+    public nhanvien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, Integer MaTK) {
         this.maNV = MaNV;
         this.tenNV = TenNV;
         this.sDT = SDT;

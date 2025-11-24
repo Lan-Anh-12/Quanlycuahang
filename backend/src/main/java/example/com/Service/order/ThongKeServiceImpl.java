@@ -38,7 +38,7 @@ public class ThongKeServiceImpl implements ThongKeService {
         LocalDateTime start = LocalDateTime.of(year, month, 1, 0, 0);
         LocalDateTime end = start.plusMonths(1);
 
-        List<DonHang> donTrongThang = donHangRepo.findByNgayLapBetween(start, end);
+        List<DonHang> donTrongThang = donHangRepo.findByngayLapBetween(start, end);
 
         long soDon = donTrongThang.size();
 
@@ -62,7 +62,7 @@ public class ThongKeServiceImpl implements ThongKeService {
         LocalDateTime s = start.atStartOfDay();
         LocalDateTime e = end.atTime(LocalTime.MAX);
 
-        List<DonHang> dons = donHangRepo.findByNgayLapBetween(s, e);
+        List<DonHang> dons = donHangRepo.findByngayLapBetween(s, e);
 
         Map<String, Object> result = new HashMap<>();
         result.put("tongDon", dons.size());
@@ -107,7 +107,7 @@ public class ThongKeServiceImpl implements ThongKeService {
         LocalDateTime start = date.atStartOfDay();
         LocalDateTime end = date.atTime(LocalTime.MAX);
 
-        List<DonHang> dons = donHangRepo.findByNgayLapBetween(start, end);
+        List<DonHang> dons = donHangRepo.findByngayLapBetween(start, end);
 
         Map<String, Object> result = new HashMap<>();
         result.put("soDon", dons.size());

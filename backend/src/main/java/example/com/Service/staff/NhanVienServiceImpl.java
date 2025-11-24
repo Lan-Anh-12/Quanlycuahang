@@ -33,13 +33,13 @@ public class NhanVienServiceImpl implements NhanVienService {
 
     @Override
     @Transactional
-    public nhanvien capNhatNhanVien(int maNV, nhanvien nv) {
+    public nhanvien capNhatNhanVien(int maNV, nhanvien nvupdated) {
         nhanvien staff = layTheoMa(maNV);
-        staff.setMaTK(nv.getMaTK());
-        staff.setEmail(nv.getEmail());
-        staff.setNgayVaoLam(nv.getNgayVaoLam());
-        staff.setSDT(nv.getSDT());
-        staff.setTenNV(nv.getTenNV());
+        staff.setMaTK(nvupdated.getMaTK());
+        staff.setEmail(nvupdated.getEmail());
+        staff.setNgayVaoLam(nvupdated.getNgayVaoLam());
+        staff.setSDT(nvupdated.getSDT());
+        staff.setTenNV(nvupdated.getTenNV());
         return nhanVienRepo.save(staff);
     }
 

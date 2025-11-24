@@ -59,7 +59,7 @@ public class DonHangServiceImpl implements DonHangService {
     }
     @Override
     public List<DonHang> LayDonHangTheoKhoangNgay(LocalDateTime start, LocalDateTime end) {
-        return donHangRepo.findByNgayLapBetween(start, end);
+        return donHangRepo.findByngayLapBetween(start, end);
     }
     @Override
     @Transactional

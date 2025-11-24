@@ -24,7 +24,7 @@ public class DonHang {
     private int maNV;
 
     @Column(name = "NgayLap")
-    private LocalDateTime ngay_lap;
+    private LocalDateTime ngayLap;
 
     @Column(name = "TongTien")
     private BigDecimal tongTien;
@@ -44,7 +44,7 @@ public class DonHang {
         this.maDH = MaDH;
         this.maKH = MaKH;
         this.maNV = MaNV;
-        this.ngay_lap = NgayLap;
+        this.ngayLap = NgayLap;
         this.tongTien = TongTien;
     }
     // Getters and Setters
@@ -67,10 +67,10 @@ public class DonHang {
         this.maNV = maNV;
     }
     public LocalDateTime getNgayLap() {
-        return ngay_lap;
+        return ngayLap;
     }
     public void setNgayLap(LocalDateTime ngayLap) {
-        this.ngay_lap = ngayLap;
+        this.ngayLap = ngayLap;
     }
     public BigDecimal getTongTien() {
         return tongTien;

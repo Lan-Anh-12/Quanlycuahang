@@ -16,7 +16,7 @@ public class sanpham {
     @Column(name = "DonGia")
     private BigDecimal donGia;
     @Column(name = "SoLuong")
-    private int soLuongTon;
+    private int soLuong;
     @Column(name = "MoTa")
     private String moTa;
     @Column(name = "TrangThai")
@@ -28,7 +28,7 @@ public class sanpham {
         this.maSP = MaSP;
         this.tenSP = TenSP;
         this.donGia = DonGia;
-        this.soLuongTon = SoLuongTon;
+        this.soLuong = SoLuongTon;
         this.moTa = MoTa;
         this.trangThai = TrangThai;
     }
@@ -53,10 +53,10 @@ public class sanpham {
         this.donGia = donGia;
     }
     public int getSoLuongTon() {
-        return soLuongTon;
+        return soLuong;
     }
     public void setSoLuongTon(int soLuongTon) {
-        this.soLuongTon = soLuongTon;
+        this.soLuong = soLuongTon;
     }
     public String getMoTa() {
         return moTa;

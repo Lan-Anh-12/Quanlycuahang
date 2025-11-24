@@ -2,7 +2,7 @@ package example.com.Controller.quanly;
 
 import org.springframework.web.bind.annotation.*;
 
-import example.com.Dto.TaoDonHangRequest;
+import example.com.Dto.DonHangRequest;
 import example.com.Service.order.DonHangService;
 import example.com.model.CT_DonHang;
 import example.com.model.DonHang;
@@ -20,7 +20,7 @@ public class QuanLyDonHangController {
     private DonHangService donHangService;
 
     @PostMapping("/tao")
-    public DonHang taoDonHang(@RequestBody TaoDonHangRequest req) {
+    public DonHang taoDonHang(@RequestBody DonHangRequest req) {
         return donHangService.TaoDonHang(req.getDonHang(), req.getChiTietDonHangs());
     }
     
