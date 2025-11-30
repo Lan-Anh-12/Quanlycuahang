@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 @Entity 
 @Table(name = "lichsudangnhap")
-public class lichsudangnhap {
+public class Lichsudangnhap {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaLS")
@@ -21,9 +21,9 @@ public class lichsudangnhap {
    
     
 
-    public lichsudangnhap() {}
+    public Lichsudangnhap() {}
 
-    public lichsudangnhap(int MaLS, int MaTK, LocalDateTime ThoiGianDangNhap, String DiaChiIP) {
+    public Lichsudangnhap(int MaLS, int MaTK, LocalDateTime ThoiGianDangNhap, String DiaChiIP) {
         this.maLS = MaLS;
         this.maTK = MaTK; // Foreign key to taikhoan
         this.thoiGianDangNhap = ThoiGianDangNhap;

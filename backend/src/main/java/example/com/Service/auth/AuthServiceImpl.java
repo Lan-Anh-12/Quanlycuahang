@@ -5,8 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import example.com.Repository.TaiKhoanRepository;
-import example.com.model.taikhoan;
-import java.util.Optional;
+import example.com.model.TaiKhoan;
+
 
 
 @Service 
@@ -20,11 +20,8 @@ public class AuthServiceImpl implements AuthService{
     @Override
     public String DangNhap(String username, String matkhau) {
         // Tìm tài khoản 
-        taikhoan tk = taiKhoanRepository.findByUsername( username)
+        TaiKhoan tk = taiKhoanRepository.findByUsername( username)
         .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
-        if( tk == null ) {
-            throw new RuntimeException("Tài khoản không tồn tại");
-        }
 
         // kiểm tra mật khẩu
         if(!matkhau.equals(tk.getMatKhau())) {
@@ -47,7 +44,7 @@ public class AuthServiceImpl implements AuthService{
         // lấy username
         String username = jwtUtil.extractUsername(refreshToken);
 
-        taikhoan tk = taiKhoanRepository.findByUsername( username)
+        TaiKhoan tk = taiKhoanRepository.findByUsername( username)
         .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
         if (tk == null) {
         throw new RuntimeException("Tài khoản không tồn tại");
@@ -58,7 +55,20 @@ public class AuthServiceImpl implements AuthService{
 
     @Override
     public void DangXuat(String token){
+        
+    }
 
+    @Override 
+    public void doiMatKhau(int maTK, String mkCu, String mkMoi) {
+        TaiKhoan tk = taiKhoanRepository.findById(maTK)
+        .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+
+        if (!tk.getMatKhau().equals(mkCu)) {
+            throw new RuntimeException("Mật khẩu cũ không đúng");
+        }
+
+        tk.setMatKhau(mkMoi);
+        taiKhoanRepository.save(tk);
     }
 
     

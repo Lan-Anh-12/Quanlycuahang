@@ -1,17 +1,17 @@
 package example.com.Repository;
 
 import java.util.List;
-import example.com.model.taikhoan;
+import example.com.model.TaiKhoan;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import java.util.Optional;
 
-public interface TaiKhoanRepository extends JpaRepository<taikhoan, Integer> {
+public interface TaiKhoanRepository extends JpaRepository<TaiKhoan, Integer> {
     // lấy tài khoản của nhân viên, quản lý
-    List<taikhoan> findByRole(String role);
+    List<TaiKhoan> findByRole(String role);
 
     // lấy tên tk
-    Optional<taikhoan> findByUsername(String username);
+    Optional<TaiKhoan> findByUsername(String username);
 
 
     

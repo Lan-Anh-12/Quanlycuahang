@@ -1,21 +1,20 @@
 package example.com.Service.customer;
 
-import example.com.model.DonHang;
-import example.com.model.khachhang;
+import example.com.model.KhachHang;
 import java.util.List;
+import java.math.BigDecimal;
 
 public interface KhachHangService {
     // CRUD khách hàng
-    khachhang taoKhachHang(khachhang kh);
-    khachhang capNhatKhachHang(int maKH, khachhang kh);
-    void xoaKhachHang(int maKH);
-    khachhang layKhachHangTheoMa(int maKH);
-    List<khachhang> layTatCaKhachHang();
+    KhachHang taoKhachHang(KhachHang kh);
+    KhachHang capNhatKhachHang(int maKH, KhachHang kh);
+    KhachHang layKhachHangTheoMa(int maKH);
+    List<KhachHang> layTatCaKhachHang();
 
     // Tìm kiếm
-    List<khachhang> timTheoTen(String ten);
-    List<khachhang> timTheoDiaChi(String diaChi);
-    List<khachhang> timKhachHangTheoDiem(int minPoint);
+    List<KhachHang> timTheoTen(String ten);
+    List<KhachHang> timTheoDiaChi(String diaChi);
+    List<KhachHang> timKhachHangTheoDiem(int minPoint);
 
 
 }

@@ -3,7 +3,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Table(name = "taikhoan")
-public class taikhoan {
+public class TaiKhoan {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaTK")
@@ -16,9 +16,9 @@ public class taikhoan {
     @Column(name = "role")
     private String role;
 
-    public taikhoan() {}
+    public TaiKhoan() {}
 
-    public taikhoan(int MaTK, String username, String MatKhau, String Role) {
+    public TaiKhoan(int MaTK, String username, String MatKhau, String Role) {
         this.maTK = MaTK;
         this.username = username;
         this.matKhau = MatKhau;
@@ -49,5 +49,6 @@ public class taikhoan {
     public void setRole(String role) {
         this.role = role;
     }
+    
     
 }

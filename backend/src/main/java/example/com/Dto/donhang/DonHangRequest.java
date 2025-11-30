@@ -1,4 +1,4 @@
-package example.com.Dto;
+package example.com.Dto.donhang;
 import java.util.List;
 
 import example.com.model.CT_DonHang;
@@ -11,5 +11,6 @@ public class DonHangRequest {
     private DonHang donHang;
     private List<CT_DonHang> chiTietDonHangs;
     
-    
 }
+
+

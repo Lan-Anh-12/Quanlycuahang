@@ -2,6 +2,7 @@ package example.com.Service.order;
 
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.List;
 
 public interface ThongKeService {
 
@@ -12,4 +13,10 @@ public interface ThongKeService {
     Map<String, Object> thongKeTheoNhanVien(int maNV);
 
     Map<String, Object> thongKeTheoNgay(LocalDate date);
+
+    Map<String, Object> thongKeTheoKhachHang(int maKH);
+
+    List<Map<String, Object>> sanPhamBanChayTheoThang(int thang, int nam );
+
+    
 }

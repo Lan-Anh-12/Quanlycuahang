@@ -5,19 +5,21 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import example.com.model.khachhang;
+import example.com.model.KhachHang;
 
-public interface KhachHangRepository extends JpaRepository<khachhang, Integer> {
+public interface KhachHangRepository extends JpaRepository<KhachHang, Integer> {
 
-    // Tìm theo tên
-    List<khachhang> findByTenKH(String tenKH);
+
+    // tìm tên theo keyword
+    List<KhachHang> findByTenKHContainingIgnoreCase(String keyword);
+
 
     // Tìm theo điểm tích lũy >= ?
-    List<khachhang> findByDiemTichLuyGreaterThanEqual(int minPoint);
+    List<KhachHang> findByDiemTichLuyGreaterThanEqual(int minPoint);
 
      // Tìm theo địa chỉ
-    List<khachhang> findByDiaChi(String diaChi);
+    List<KhachHang> findByDiaChi(String diaChi);
 
     // Tìm khách theo khoảng điểm
-    List<khachhang> findByDiemTichLuyBetween(int min, int max);
+    List<KhachHang> findByDiemTichLuyBetween(int min, int max);
 }

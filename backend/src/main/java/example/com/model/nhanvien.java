@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "nhanvien")
-public class nhanvien {
+public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaNV")
@@ -23,10 +23,13 @@ public class nhanvien {
     @Column(name = "MaTK")
     private int maTK; // Foreign key to taikhoan
 
+    @OneToOne
+    @JoinColumn(name = "maTK") // cột FK trong bảng nhanvien
+    private TaiKhoan taiKhoan;
 
-    public nhanvien() {}   
+    public NhanVien() {}   
 
-    public nhanvien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, Integer MaTK) {
+    public NhanVien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, Integer MaTK) {
         this.maNV = MaNV;
         this.tenNV = TenNV;
         this.sDT = SDT;
@@ -72,7 +75,12 @@ public class nhanvien {
     public void setMaTK(int maTK) {
         this.maTK = maTK;
     }
+    public void setTaiKhoan(TaiKhoan taiKhoan) {
+        this.taiKhoan = taiKhoan;
+    }
     
-    
+    public TaiKhoan getTaiKhoan() {
+        return taiKhoan;
+    }
 
 }

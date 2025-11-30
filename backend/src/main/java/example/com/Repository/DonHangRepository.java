@@ -38,7 +38,7 @@ public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
 
     // Số lượng đơn khách đã mua
     @Query("SELECT COUNT(d) FROM DonHang d WHERE d.maKH = :maKH")
-    long soDonHangCuaKhach(@Param("maKH") int maKH);
-
+    int soDonHangCuaKhach(@Param("maKH") int maKH);
+    
 
 }

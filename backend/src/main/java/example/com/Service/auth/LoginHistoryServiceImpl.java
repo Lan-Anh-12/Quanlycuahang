@@ -1,6 +1,6 @@
 package example.com.Service.auth;
 
-import example.com.model.lichsudangnhap;
+import example.com.model.Lichsudangnhap;
 import example.com.Repository.LichSuDangNhapRepository;
 import example.com.Repository.TaiKhoanRepository;
 
@@ -20,14 +20,14 @@ public class LoginHistoryServiceImpl implements LoginHistoryService {
     
 
     @Override
-    public lichsudangnhap TaoLichSuDangNhap( lichsudangnhap lichsu) {
-        lichsudangnhap savedlichsu = lichSuDangNhapRepo.save(lichsu);
+    public Lichsudangnhap TaoLichSuDangNhap( Lichsudangnhap lichsu) {
+        Lichsudangnhap savedlichsu = lichSuDangNhapRepo.save(lichsu);
 
         return savedlichsu;
     }
     @Override
-     public List<lichsudangnhap> LayLichSuTheoIp(String diaChiIP) {
-        List<lichsudangnhap> list = lichSuDangNhapRepo.findBydiaChiIP(diaChiIP);
+     public List<Lichsudangnhap> LayLichSuTheoIp(String diaChiIP) {
+        List<Lichsudangnhap> list = lichSuDangNhapRepo.findBydiaChiIP(diaChiIP);
         if (list.isEmpty()) {
         throw new RuntimeException("Không tìm thấy lịch sử đăng nhập nào với IP này");
     }

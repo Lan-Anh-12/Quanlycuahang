@@ -26,8 +26,8 @@ public class DonHang {
     @Column(name = "NgayLap")
     private LocalDateTime ngayLap;
 
-    @Column(name = "TongTien")
-    private BigDecimal tongTien;
+    @Column(name = "TongTien", nullable = false)
+    private BigDecimal tongTien = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL)
     private List<CT_DonHang> chiTietDonHangs;
@@ -35,7 +35,7 @@ public class DonHang {
     @ManyToOne
     @JoinColumn(name = "MaKH", insertable = false, updatable = false)
     @JsonIgnore
-    private khachhang khachHang;
+    private KhachHang khachHang;
 
 
     public DonHang() {}

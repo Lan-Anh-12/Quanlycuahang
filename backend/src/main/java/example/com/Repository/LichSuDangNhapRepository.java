@@ -1,18 +1,18 @@
 package example.com.Repository;
 
-import example.com.model.lichsudangnhap;
+import example.com.model.Lichsudangnhap;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
 
-public interface LichSuDangNhapRepository extends JpaRepository<lichsudangnhap, Integer> {
+public interface LichSuDangNhapRepository extends JpaRepository<Lichsudangnhap, Integer> {
     // lấy số lần đăng nhập 1 tk
-    List<lichsudangnhap> findBymaTK(int maTK);
+    List<Lichsudangnhap> findBymaTK(int maTK);
 
     // lấy các tk đăng nhập cùng 1 máy
-    List<lichsudangnhap> findBydiaChiIP(String diaChiIP);
+    List<Lichsudangnhap> findBydiaChiIP(String diaChiIP);
 
    
 }

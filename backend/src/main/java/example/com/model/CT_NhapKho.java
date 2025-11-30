@@ -29,7 +29,7 @@ public class CT_NhapKho {
     @ManyToOne
     @JoinColumn(name = "MaNK", insertable = false, updatable = false)
     @JsonIgnore
-    private nhapkho nhapKho;
+    private NhapKho nhapKho;
 
     public CT_NhapKho() {}
 

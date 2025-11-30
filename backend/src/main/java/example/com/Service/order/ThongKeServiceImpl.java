@@ -5,11 +5,13 @@ import example.com.Repository.ChiTietDonHangRepository;
 import example.com.Repository.SanPhamRepository;
 import example.com.Repository.KhachHangRepository;
 import example.com.model.DonHang;
+import example.com.model.SanPham;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.*;
+import java.math.BigDecimal;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -121,4 +123,54 @@ public class ThongKeServiceImpl implements ThongKeService {
 
         return result;
     }
+
+    @Override
+    public Map<String, Object> thongKeTheoKhachHang(int maKH) {
+
+        Map<String, Object> result = new HashMap<>();
+
+        // Lấy số đơn hàng
+        int tongDon = donHangRepo.soDonHangCuaKhach(maKH);
+
+        // Lấy tổng tiền
+        BigDecimal tongTien = donHangRepo.tongTienChiCuaKhach(maKH);
+
+        // Lấy danh sách sản phẩm đã mua
+        List<String> spDaMua = ctDonRepo.dsSanPhamDaMuaNative(maKH);
+
+        // Đưa dữ liệu vào Map
+        result.put("tongDonHang", tongDon);
+        result.put("tongTienDaMua", tongTien);
+        result.put("sanPhamDaMua", spDaMua);
+
+        return result;
+    }
+    // sản phẩm bán chạy trong tháng
+    @Override
+public List<Map<String, Object>> sanPhamBanChayTheoThang(int thang, int nam) {
+
+    List<Object[]> data = ctDonRepo.sanPhamBanChayTheoThang(thang, nam);
+
+    List<Map<String, Object>> result = new ArrayList<>();
+
+    for (Object[] row : data) {
+        SanPham sp = (SanPham) row[0];
+        Long tongBan = (Long) row[1];
+
+        Map<String, Object> item = new HashMap<>();
+        item.put("maSP", sp.getMaSP());
+        item.put("tenSP", sp.getTenSP());
+        item.put("soLuongBan", tongBan);
+        item.put("donGia", sp.getDonGia());
+        item.put("phanLoai", sp.getPhanLoai());
+        item.put("url", sp.getUrl());
+
+        result.add(item);
+    }
+
+    return result;
+}
+
+
+
 }
