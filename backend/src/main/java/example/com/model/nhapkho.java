@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "nhapkho")
-public class nhapkho {
+public class NhapKho {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaNK")
@@ -26,9 +26,9 @@ public class nhapkho {
     @OneToMany(mappedBy = "nhapKho", cascade = CascadeType.ALL)
     private List<CT_NhapKho> chiTietNhapKhos;
 
-    public nhapkho() {}
+    public NhapKho() {}
 
-    public nhapkho( int MaNK, int MaNV, String NhaCungCap, BigDecimal TongTien) {
+    public NhapKho( int MaNK, int MaNV, String NhaCungCap, BigDecimal TongTien) {
         
         this.maNK = MaNK;
         this.maNV = MaNV;

@@ -5,7 +5,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "sanpham")
-public class sanpham {
+public class SanPham {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaSP")
@@ -16,20 +16,26 @@ public class sanpham {
     @Column(name = "DonGia")
     private BigDecimal donGia;
     @Column(name = "SoLuong")
-    private int soLuongTon;
+    private int soLuong;
     @Column(name = "MoTa")
     private String moTa;
+    @Column(name = "url")
+    private String url;
+    @Column(name = "PhanLoai")
+    private String phanLoai;
     @Column(name = "TrangThai")
     private String trangThai;
 
-    public sanpham() {}
+    public SanPham() {}
 
-    public sanpham(int MaSP, String TenSP, BigDecimal DonGia, int SoLuongTon, String MoTa, String TrangThai) {
+    public SanPham(int MaSP, String TenSP, BigDecimal DonGia, int SoLuongTon, String MoTa,String url,String phanLoai, String TrangThai) {
         this.maSP = MaSP;
         this.tenSP = TenSP;
         this.donGia = DonGia;
-        this.soLuongTon = SoLuongTon;
+        this.soLuong = SoLuongTon;
         this.moTa = MoTa;
+        this.url = url;
+        this.phanLoai = phanLoai;
         this.trangThai = TrangThai;
     }
     
@@ -53,16 +59,28 @@ public class sanpham {
         this.donGia = donGia;
     }
     public int getSoLuongTon() {
-        return soLuongTon;
+        return soLuong;
     }
     public void setSoLuongTon(int soLuongTon) {
-        this.soLuongTon = soLuongTon;
+        this.soLuong = soLuongTon;
     }
     public String getMoTa() {
         return moTa;
     }
     public void setMoTa(String moTa) {
         this.moTa = moTa;
+    }
+    public String getUrl() {
+        return url;
+    }
+    public void setUrl(String url) {
+        this.url = url;
+    }
+    public String getPhanLoai() {
+        return phanLoai;
+    }
+    public void setPhanLoai(String phanLoai) {
+        this.phanLoai = phanLoai;
     }
     public String getTrangThai() {
         return trangThai;

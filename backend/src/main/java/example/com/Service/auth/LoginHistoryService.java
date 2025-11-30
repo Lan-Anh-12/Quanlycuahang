@@ -1,13 +1,13 @@
 package example.com.Service.auth;
 
-import java.time.LocalDateTime;
-import example.com.model.lichsudangnhap;
+import example.com.model.Lichsudangnhap;
 import java.util.List;
 
-public interface LoginHistoryService {
-    lichsudangnhap TaoLichSuDangNhap(int maTk, LocalDateTime thoiGian, String ip );
 
-    List<lichsudangnhap> LayLichSuTheoIp(String diaChiIP);
+public interface LoginHistoryService {
+    Lichsudangnhap TaoLichSuDangNhap(Lichsudangnhap lichsu );
+
+    List<Lichsudangnhap> LayLichSuTheoIp(String diaChiIP);
 
     
 }

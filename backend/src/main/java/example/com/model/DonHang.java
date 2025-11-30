@@ -24,10 +24,10 @@ public class DonHang {
     private int maNV;
 
     @Column(name = "NgayLap")
-    private LocalDateTime ngay_lap;
+    private LocalDateTime ngayLap;
 
-    @Column(name = "TongTien")
-    private BigDecimal tongTien;
+    @Column(name = "TongTien", nullable = false)
+    private BigDecimal tongTien = BigDecimal.ZERO;
 
     @OneToMany(mappedBy = "donHang", cascade = CascadeType.ALL)
     private List<CT_DonHang> chiTietDonHangs;
@@ -35,7 +35,7 @@ public class DonHang {
     @ManyToOne
     @JoinColumn(name = "MaKH", insertable = false, updatable = false)
     @JsonIgnore
-    private khachhang khachHang;
+    private KhachHang khachHang;
 
 
     public DonHang() {}
@@ -44,7 +44,7 @@ public class DonHang {
         this.maDH = MaDH;
         this.maKH = MaKH;
         this.maNV = MaNV;
-        this.ngay_lap = NgayLap;
+        this.ngayLap = NgayLap;
         this.tongTien = TongTien;
     }
     // Getters and Setters
@@ -67,10 +67,10 @@ public class DonHang {
         this.maNV = maNV;
     }
     public LocalDateTime getNgayLap() {
-        return ngay_lap;
+        return ngayLap;
     }
     public void setNgayLap(LocalDateTime ngayLap) {
-        this.ngay_lap = ngayLap;
+        this.ngayLap = ngayLap;
     }
     public BigDecimal getTongTien() {
         return tongTien;

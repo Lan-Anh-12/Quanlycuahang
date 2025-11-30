@@ -5,7 +5,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "khachhang")
-public class khachhang {
+public class KhachHang {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaKH")
@@ -19,18 +19,21 @@ public class khachhang {
     private String diaChi;
     @Column(name = "DiemTichLuy")
     private int diemTichLuy;
+    @Column(name = "sdt")
+    private String sdt;
 
     @OneToMany(mappedBy = "khachHang", cascade = CascadeType.ALL)
     private java.util.List<DonHang> donHangs;
     
-    public khachhang() {}
+    public KhachHang() {}
 
-    public khachhang(int MaKH, String TenKH, int NamSinh, String DiaChi, int DiemTichLuy) {
+    public KhachHang(int MaKH, String TenKH, int NamSinh, String DiaChi, int DiemTichLuy, String sdt) {
         this.maKH = MaKH;
         this.tenKH = TenKH;
         this.namSinh = NamSinh;
         this.diaChi = DiaChi;
         this.diemTichLuy = DiemTichLuy;
+        this.sdt = sdt;
     }
     // Getters and Setters
     public int getMaKH() {
@@ -62,6 +65,12 @@ public class khachhang {
     }
     public void setDiemTichLuy(int diemTichLuy) {
         this.diemTichLuy = diemTichLuy;
+    }
+    public String getsdt() {
+        return sdt;
+    }
+    public void setsdt(String sdt) {
+        this.sdt = sdt;
     }
     public List<DonHang> getDonHangs() {
         return donHangs;
