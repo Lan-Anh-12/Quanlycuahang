@@ -1,72 +1,109 @@
-import { useState } from "react";
-import axios from "axios";
+import React, { useState } from "react";
 
-const API = "http://localhost:8080/quanly/donhang";
+const LoginTest = () => {
+    const [username, setUsername] = useState("");
+    const [password, setPassword] = useState("");
+    const [token, setToken] = useState("");
+    const [refreshToken, setRefreshToken] = useState("");
 
-function App() {
-  const [log, setLog] = useState<any>(null);
+    const [oldPw, setOldPw] = useState("");
+    const [newPw, setNewPw] = useState("");
+    const [maTK, setMaTK] = useState("");
 
-  // Hàm format ngày: yyyy-MM-dd'T'HH:mm:ss
-  const formatLocalDateTime = (date: Date) => {
-    const pad = (n: number) => n.toString().padStart(2, "0");
-    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}:${pad(date.getSeconds())}`;
-  };
+    // ------------------------
+    // LOGIN
+    // ------------------------
+    const handleLogin = async () => {
+        const res = await fetch("http://localhost:8080/api/auth/login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                username: username,
+                matkhau: password
+            })
+        });
 
-  const taoDonHang = async () => {
-    const now = new Date();
-    const body = {
-      donHang: {
-        maKH: 1,  // ID khách hàng tồn tại
-        maNV: 1,  // ID nhân viên tồn tại
-        tongTien: 50000,
-        ngayLap: formatLocalDateTime(now),
-      },
-      chiTietDonHangs: [
-        { maSP: 2, soLuong: 2, donGia: 15000, thanhTien: 30000 }, // SP tồn tại
-        { maSP: 3, soLuong: 1, donGia: 10000, thanhTien: 10000 },
-      ],
+        const data = await res.text(); // BE trả token dạng string
+        setToken(data);
+
+        // refresh token = token luôn (BE của m chưa tách refresh token)
+        setRefreshToken(data);
+
+        console.log("Token:", data);
     };
 
-    try {
-      const res = await axios.post(`${API}/tao`, body);
-      setLog(res.data);
-    } catch (err: any) {
-      console.error("Lỗi tạo đơn hàng:", err.response?.data || err.message);
-      setLog({ error: err.response?.data || err.message });
-    }
-  };
+    // ------------------------
+    // REFRESH
+    // ------------------------
+    const handleRefresh = async () => {
+        const res = await fetch("http://localhost:8080/api/auth/refresh", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                refreshToken: refreshToken
+            }),
+        });
 
-  const layDonHang_KH = async () => {
-    try {
-      const res = await axios.get(`${API}/khachhang`, { params: { maKH: 1 } });
-      setLog(res.data);
-    } catch (err: any) {
-      console.error("Lỗi lấy đơn hàng theo khách:", err.response?.data || err.message);
-      setLog({ error: err.response?.data || err.message });
-    }
-  };
+        const data = await res.text();
+        setToken(data);
+        console.log("Token mới:", data);
+    };
 
-  const layChiTiet = async () => {
-    try {
-      const res = await axios.get(`${API}/chitiet`, { params: { maDH: 1 } });
-      setLog(res.data);
-    } catch (err: any) {
-      console.error("Lỗi lấy chi tiết đơn hàng:", err.response?.data || err.message);
-      setLog({ error: err.response?.data || err.message });
-    }
-  };
+    // ------------------------
+    // CHANGE PASSWORD
+    // ------------------------
+    const handleChangePw = async () => {
+        const res = await fetch("http://localhost:8080/api/auth/change-password", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                maTK: Number(maTK),
+                mkCu: oldPw,
+                mkMoi: newPw
+            }),
+        });
 
-  return (
-    <div style={{ padding: 20 }}>
-      <h2>Test API Đơn Hàng</h2>
+        if (res.ok) {
+            alert("Đổi mật khẩu thành công!");
+        } else {
+            alert("Đổi mật khẩu thất bại!");
+        }
+    };
 
-      <button onClick={taoDonHang}>Tạo đơn hàng</button>
-      <button onClick={layDonHang_KH}>Lấy đơn theo khách hàng</button>
-      <button onClick={layChiTiet}>Lấy chi tiết đơn hàng</button>
 
-      <pre>{JSON.stringify(log, null, 2)}</pre>
-    </div>
-  );
-}
+    return (
+        <div style={{ padding: 40 }}>
+            <h2>TEST LOGIN</h2>
 
-export default App;
+            <input placeholder="username" onChange={(e) => setUsername(e.target.value)} /><br />
+            <input placeholder="password" onChange={(e) => setPassword(e.target.value)} /><br />
+            <button onClick={handleLogin}>Login</button>
+
+            <hr />
+
+            <h2>TEST REFRESH</h2>
+            <button onClick={handleRefresh}>Refresh Token</button>
+
+            <p>Token hiện tại:</p>
+            <textarea value={token} readOnly style={{ width: "100%", height: 80 }} />
+
+            <hr />
+
+            <h2>TEST CHANGE PASSWORD</h2>
+
+            <input placeholder="Mã TK" onChange={(e) => setMaTK(e.target.value)} /><br />
+            <input placeholder="Mật khẩu cũ" onChange={(e) => setOldPw(e.target.value)} /><br />
+            <input placeholder="Mật khẩu mới" onChange={(e) => setNewPw(e.target.value)} /><br />
+
+            <button onClick={handleChangePw}>Đổi mật khẩu</button>
+        </div>
+    );
+};
+
+export default LoginTest;
