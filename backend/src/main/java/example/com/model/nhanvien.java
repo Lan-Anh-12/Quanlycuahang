@@ -19,6 +19,8 @@ public class NhanVien {
     private String email;
     @Column(name = "NgayVaoLam")
     private LocalDate ngayVaoLam;
+    @Column(name = "TrangThai")
+    private String trangThai;
 
     @Column(name = "MaTK")
     private int maTK; // Foreign key to taikhoan
@@ -29,13 +31,14 @@ public class NhanVien {
 
     public NhanVien() {}   
 
-    public NhanVien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, Integer MaTK) {
+    public NhanVien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, Integer MaTK, String trangThai) {
         this.maNV = MaNV;
         this.tenNV = TenNV;
         this.sDT = SDT;
         this.email = Email;
         this.ngayVaoLam = NgayVaoLam;
         this.maTK = MaTK;
+        this.trangThai = trangThai;
     }
 
     // Getters and Setters
@@ -74,6 +77,12 @@ public class NhanVien {
     }
     public void setMaTK(int maTK) {
         this.maTK = maTK;
+    }
+    public String getTrangThai() {
+        return trangThai;
+    }
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
     }
     public void setTaiKhoan(TaiKhoan taiKhoan) {
         this.taiKhoan = taiKhoan;
