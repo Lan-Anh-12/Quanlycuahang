@@ -6,14 +6,12 @@ import example.com.Dto.sanpham.SanPhamResponse;
 import example.com.Dto.khohang.NhapKhoResponse;
 
 import org.springframework.web.bind.annotation.*;
-import org.aspectj.lang.annotation.After;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
-import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
