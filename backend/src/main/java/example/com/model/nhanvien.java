@@ -5,7 +5,7 @@ import java.time.LocalDate;
 
 @Entity
 @Table(name = "nhanvien")
-public class nhanvien {
+public class NhanVien {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MaNV")
@@ -19,20 +19,26 @@ public class nhanvien {
     private String email;
     @Column(name = "NgayVaoLam")
     private LocalDate ngayVaoLam;
+    @Column(name = "TrangThai")
+    private String trangThai;
 
     @Column(name = "MaTK")
     private int maTK; // Foreign key to taikhoan
 
+    @OneToOne
+    @JoinColumn(name = "maTK") // cột FK trong bảng nhanvien
+    private TaiKhoan taiKhoan;
 
-    public nhanvien() {}   
+    public NhanVien() {}   
 
-    public nhanvien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, int MaTK) {
+    public NhanVien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, Integer MaTK, String trangThai) {
         this.maNV = MaNV;
         this.tenNV = TenNV;
         this.sDT = SDT;
         this.email = Email;
         this.ngayVaoLam = NgayVaoLam;
         this.maTK = MaTK;
+        this.trangThai = trangThai;
     }
 
     // Getters and Setters
@@ -72,7 +78,18 @@ public class nhanvien {
     public void setMaTK(int maTK) {
         this.maTK = maTK;
     }
+    public String getTrangThai() {
+        return trangThai;
+    }
+    public void setTrangThai(String trangThai) {
+        this.trangThai = trangThai;
+    }
+    public void setTaiKhoan(TaiKhoan taiKhoan) {
+        this.taiKhoan = taiKhoan;
+    }
     
-    
+    public TaiKhoan getTaiKhoan() {
+        return taiKhoan;
+    }
 
 }

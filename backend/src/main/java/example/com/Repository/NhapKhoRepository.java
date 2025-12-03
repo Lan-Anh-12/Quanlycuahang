@@ -1,23 +1,21 @@
 package example.com.Repository;
-import example.com.model.nhapkho;
+import example.com.model.NhapKho;
 import java.time.LocalDateTime;
 import java.util.List;
-import java.math.BigDecimal;
+
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface NhapKhoRepository extends JpaRepository<nhapkho, Integer> {
+
+public interface NhapKhoRepository extends JpaRepository<NhapKho, Integer> {
     // danh sách nhập kho theo mã nhân viên
-    List<nhapkho> findByMaNV(int MaNV);
+    List<NhapKho> findByMaNV(int MaNV);
 
     // danh sách theo nhà cung cấp
-    List<nhapkho> findByNhaCungCap( int nhaCungCap);
-
-    // doanh thu
-    nhapkho findByTongTien(BigDecimal tongTien);
+    List<NhapKho> findByNhaCungCap( String nhaCungCap);
 
     // đơn nhập kho theo ngày nhập hàng
-    List<nhapkho> findByNgayNhap(LocalDateTime ngayNhap);
+    List<NhapKho> findByNgayNhap(LocalDateTime ngayNhap);
 
 
 }
