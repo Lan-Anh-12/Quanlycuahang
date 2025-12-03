@@ -66,6 +66,35 @@ export const addOrder = async (data: Omit<OrderRecord, "MaDH">) => {
 };
 
 // ======================================
+// ADD ORDER WITH DETAILS
+// ======================================
+
+export const addOrderWithDetails = async (
+  order: Omit<OrderRecord, "MaDH">,
+  details: Omit<OrderDetail, "MaCTDH" | "MaDH">[]
+) => {
+  try {
+    // 1. Thêm order chính
+    const createdOrder = await addOrder(order);
+    if (!createdOrder) return null;
+
+    const MaDH = createdOrder.MaDH;
+
+    // 2. Thêm từng chi tiết
+    const detailPromises = details.map((d) =>
+      axios.post(`${API_URL}/${MaDH}/details`, { ...d, MaDH })
+    );
+
+    await Promise.all(detailPromises);
+
+    return { order: createdOrder, details };
+  } catch (error) {
+    console.log("Lỗi khi thêm đơn hàng với chi tiết:", error);
+    return null;
+  }
+};
+
+// ======================================
 // UPDATE ORDER
 // ======================================
 
