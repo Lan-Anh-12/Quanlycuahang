@@ -1,43 +1,46 @@
 package example.com.Service.inventory;
 
 import java.util.List;
-import example.com.model.CT_NhapKho;
-import example.com.model.NhapKho;
-import example.com.model.SanPham;
 
-
+import example.com.Dto.khohang.NhapKhoRequest;
+import example.com.Dto.khohang.NhapKhoResponse;
+import example.com.Dto.sanpham.SanPhamRequest;
+import example.com.Dto.sanpham.SanPhamResponse;
 
 public interface InventoryService {
     
-    public NhapKho NhapKho(NhapKho phieu, List<CT_NhapKho> chitiets );
+     // Nhập kho từ FE
+    NhapKhoResponse nhapKho(NhapKhoRequest request);
 
     // Lấy danh sách phiếu nhập
-    List<NhapKho> layTatCaPhieuNhap();
+    List<NhapKhoResponse> layTatCaPhieuNhap();
 
     // Lấy 1 phiếu nhập
-    NhapKho layPhieuNhapTheoMa(int maNK);
+    NhapKhoResponse layPhieuNhapTheoMa(String maNK);
 
     // Xóa phiếu nhập + trừ tồn kho tương ứng
-    void xoaPhieuNhap(int maNK);
+    void xoaPhieuNhap(String maNK);
 
-    // kiểm tra sản phẩm còn số lượng không
-    int XemTonKho(int maSP);
+    // kiểm tra tồn kho sản phẩm
+    int xemTonKho(String maSP);
     int kiemTraSoLuongSpTheoTen(String keyword);
 
-    // sản phẩm còn bán
-    List<SanPham> sanPhamConBan();
-    // sản phẩm theo loại
-    List<SanPham> sanPhamTheoLoai(String phanLoai);
-    // lấy url theo mã
-    String layUrlTheoMa(int maSp);
+    // Sản phẩm
+    List<SanPhamResponse> sanPhamConBan();
+    List<SanPhamResponse> searchSanPham(String phanLoai); // tìm sp theo phân loại hoặc tên
+    String layUrlTheoMa(String maSp);
 
     // CRUD sản phẩm
+    // Tạo sản phẩm mới
+    SanPhamResponse taoSanPhamMoi(SanPhamRequest req);
 
-    //tạo sản phẩm
-    SanPham taoSanPhamMoi(SanPham sp);
-    // xóa sản phẩm
-    void xoaSanPham(int maSP);
-    // cập nhật sản phẩm 
-    SanPham capNhatSanPham(String tenSP, SanPham sp);
+    // Xóa sản phẩm
+    void xoaSanPham(String maSP);
+
+    // Cập nhật sản phẩm
+    SanPhamResponse capNhatSanPham(String maSP, SanPhamRequest req);
+
+    // lấy theo mã nhập hoặc nhà cung cấp
+    List<NhapKhoResponse> layTheoMaNKOrNCC(String keyword);
 
 }

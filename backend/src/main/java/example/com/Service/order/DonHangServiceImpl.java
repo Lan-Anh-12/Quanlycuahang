@@ -7,16 +7,23 @@ import org.springframework.transaction.annotation.Transactional;
 import example.com.Dto.donhang.ChiTietDonHangResponse;
 import example.com.Dto.donhang.DonHangRequest;
 import example.com.Dto.donhang.DonHangResponse;
+import example.com.Dto.donhang.CapNhatDonHangRequest;
+import example.com.Dto.donhang.ChiTietDonHangRequest;
+import example.com.Dto.donhang.CapNhatDonHangRequest;
+
 import example.com.Repository.ChiTietDonHangRepository;
 import example.com.Repository.DonHangRepository;
 import example.com.Repository.SanPhamRepository;
+import example.com.Repository.KhachHangRepository;
 import example.com.model.CT_DonHang;
 import example.com.model.DonHang;
+import example.com.model.KhachHang;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service // đánh dấu lớp này là một service trong Spring
 @Transactional
@@ -31,170 +38,210 @@ public class DonHangServiceImpl implements DonHangService {
     @Autowired
     private SanPhamRepository sanPhamRepo;
 
-    @Override
-    public List<DonHang> layHetDonHang() {
-        return donHangRepo.findAll();
+    @Autowired
+    private KhachHangRepository khachHangRepo;
+
+    private DonHangResponse mapToResponse(DonHang dh) {
+        DonHangResponse res = new DonHangResponse();
+        res.setMaDH(dh.getMaDH());
+        res.setMaKH(dh.getMaKH());
+        res.setMaNV(dh.getMaNV());
+        res.setNgayLap(dh.getNgayLap());
+        res.setTongTien(dh.getTongTien());
+
+        // map chi tiết đơn hàng
+        List<CT_DonHang> chiTietList = chiTietDonHangRepo.findByMaDH(dh.getMaDH());
+        List<ChiTietDonHangResponse> chiTietResp = chiTietList.stream()
+            .map(ct -> {
+                ChiTietDonHangResponse ctRes = new ChiTietDonHangResponse();
+                ctRes.setMaCTDH(ct.getMaCTDH());
+                ctRes.setMaSP(ct.getMaSP());
+                ctRes.setSoLuong(ct.getSoLuong());
+                ctRes.setDonGia(ct.getDonGia());
+                ctRes.setThanhTien(ct.getThanhTien());
+                return ctRes;
+            })
+            .collect(Collectors.toList());
+
+        res.setChiTiet(chiTietResp);
+
+        return res;
     }
+
+    @Override
+    public List<DonHangResponse> layHetDonHang() {
+        List<DonHang> list = donHangRepo.findAll();
+
+        return list.stream().map(this::mapToResponse).toList();
+}
+
 
    @Override
 @Transactional
-public DonHangResponse TaoDonHang(DonHang donHang, List<CT_DonHang> chiTietDonHangs) {
-
+public DonHangResponse TaoDonHang(DonHangRequest request) {
     BigDecimal tongTien = BigDecimal.ZERO;
+    String maKH = request.getMaKH();
 
-    // Auto set ngày lập
-    if (donHang.getNgayLap() == null) {
-        donHang.setNgayLap(LocalDateTime.now());
+    //  Xử lý khách hàng
+    KhachHang khachHang;
+    if (maKH == null) {
+        // khách mới
+        khachHang = new KhachHang();
+        khachHang.setTenKH(request.getTenKH()); // FE gửi tên
+        khachHang.setNamSinh(request.getNamSinh());
+        khachHang.setDiaChi(request.getDiaChi());
+        khachHang = khachHangRepo.save(khachHang);
+        maKH = khachHang.getMaKH();
+    } else {
+        khachHang = khachHangRepo.findById(maKH)
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy khách hàng"));
     }
 
-    // Lưu đơn hàng trước để có mã DH
-    DonHang saved = donHangRepo.save(donHang);
+    //  Tạo đơn hàng
+    DonHang donHang = new DonHang();
+    donHang.setMaKH(maKH);
+    donHang.setMaNV(request.getMaNV());
+    donHang.setNgayLap(LocalDateTime.now());
+    DonHang savedDH = donHangRepo.save(donHang);
 
-    List<ChiTietDonHangResponse> chiTietResponseList = new ArrayList<>();
+    //  Tạo chi tiết đơn hàng
+    List<ChiTietDonHangResponse> chiTietRespList = new ArrayList<>();
+    for (ChiTietDonHangRequest ctReq : request.getChiTietDonHangs()) {
+        BigDecimal donGia = sanPhamRepo.findById(ctReq.getMaSP())
+                .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"))
+                .getDonGia();
+        BigDecimal thanhTien = donGia.multiply(BigDecimal.valueOf(ctReq.getSoLuong()));
 
-    for (CT_DonHang ct : chiTietDonHangs) {
-
-        BigDecimal giaSP = sanPhamRepo.findById(ct.getMaSP())
-            .orElseThrow(() -> new RuntimeException("Không tìm thấy sản phẩm"))
-            .getDonGia();
-
-        BigDecimal thanhTien = giaSP.multiply(BigDecimal.valueOf(ct.getSoLuong()));
-
-        ct.setMaDH(saved.getMaDH());
-        ct.setDonGia(giaSP);
+        CT_DonHang ct = new CT_DonHang();
+        ct.setMaDH(savedDH.getMaDH());
+        ct.setMaSP(ctReq.getMaSP());
+        ct.setSoLuong(ctReq.getSoLuong());
+        ct.setDonGia(donGia);
         ct.setThanhTien(thanhTien);
 
-        CT_DonHang savedCT = chiTietDonHangRepo.save(ct);
+        chiTietDonHangRepo.save(ct);
 
         tongTien = tongTien.add(thanhTien);
 
         // giảm kho
-        sanPhamRepo.tangSoLuong(ct.getMaSP(), -ct.getSoLuong());
+        sanPhamRepo.tangSoLuong(ctReq.getMaSP(), -ctReq.getSoLuong());
 
         // map sang response
         ChiTietDonHangResponse ctRes = new ChiTietDonHangResponse();
-        ctRes.setMaCTDH(savedCT.getMaCTDH());
-        ctRes.setMaSP(savedCT.getMaSP());
-        ctRes.setSoLuong(savedCT.getSoLuong());
-        ctRes.setDonGia(savedCT.getDonGia());
-        ctRes.setThanhTien(savedCT.getThanhTien());
-
-        chiTietResponseList.add(ctRes);
+        ctRes.setMaCTDH(ct.getMaCTDH());
+        ctRes.setMaSP(ct.getMaSP());
+        ctRes.setSoLuong(ct.getSoLuong());
+        ctRes.setDonGia(ct.getDonGia());
+        ctRes.setThanhTien(ct.getThanhTien());
+        chiTietRespList.add(ctRes);
     }
 
-    // cập nhật tổng tiền
-    saved.setTongTien(tongTien);
-    donHangRepo.save(saved);
+    //  Cập nhật tổng tiền đơn hàng
+    savedDH.setTongTien(tongTien);
+    donHangRepo.save(savedDH);
 
-    // map sang response
+   
+    khachHangRepo.save(khachHang);
+
+    //  Trả response
     DonHangResponse res = new DonHangResponse();
-    res.setMaDH(saved.getMaDH());
-    res.setMaKH(saved.getMaKH());
-    res.setMaNV(saved.getMaNV());
-    res.setNgayLap(saved.getNgayLap());
-    res.setTongTien(saved.getTongTien());
-    res.setChiTiet(chiTietResponseList);
+    res.setMaDH(savedDH.getMaDH());
+    res.setMaKH(savedDH.getMaKH());
+    res.setMaNV(savedDH.getMaNV());
+    res.setNgayLap(savedDH.getNgayLap());
+    res.setTongTien(savedDH.getTongTien());
+    res.setChiTiet(chiTietRespList);
 
     return res;
 }
 
 
-
     @Override
-    public List<DonHang> LayDonHangTheoKhachHang(int maKH) {
-        return donHangRepo.findByMaKH(maKH);
+    public List<DonHangResponse> LayDonHangTheoKhachHang(String maKH) {
+        List<DonHang> donHangs = donHangRepo.findByMaKH(maKH);
+        return donHangs.stream()
+                   .map(this::mapToResponse)
+                   .collect(Collectors.toList());
     }
 
+
     @Override
-    public List<CT_DonHang> LayChiTietDonHangTheoDonHang(int maDH) {
-        return chiTietDonHangRepo.findByMaDH(maDH);
+    public List<ChiTietDonHangResponse> LayChiTietDonHangTheoDonHang(String maDH) {
+        List<CT_DonHang> chiTietList = chiTietDonHangRepo.findByMaDH(maDH);
+        return chiTietList.stream()
+                .map(ct -> {
+                    ChiTietDonHangResponse ctRes = new ChiTietDonHangResponse();
+                    ctRes.setMaCTDH(ct.getMaCTDH());
+                    ctRes.setMaSP(ct.getMaSP());
+                    ctRes.setSoLuong(ct.getSoLuong());
+                    ctRes.setDonGia(ct.getDonGia());
+                    ctRes.setThanhTien(ct.getThanhTien());
+                    return ctRes;
+                })
+                .collect(Collectors.toList());
     }
 
     @Override
-    public List<DonHang> XemDonHangNVLap(int maNV) {
-        return donHangRepo.findByMaNV(maNV);
+    public List<DonHangResponse> XemDonHangNVLap(String maNV) {
+        return donHangRepo.findByMaNV(maNV).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     @Override
-    public List<DonHang> LayDonHangTheoKhoangNgay(LocalDateTime start, LocalDateTime end) {
-        return donHangRepo.findByngayLapBetween(start, end);
-    }
-    @Override
-    @Transactional
-    public void XoaDonHang(int maDH) {
-        // Xóa chi tiết trước
-        chiTietDonHangRepo.deleteByMaDH(maDH);
-        // Xóa đơn hàng
-        donHangRepo.deleteById(maDH);
+    public List<DonHangResponse> LayDonHangTheoKhoangNgay(LocalDateTime start, LocalDateTime end) {
+        return donHangRepo.findByNgayLapBetween(start, end).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
     }
     
+    
      @Override
-@Transactional
-public DonHang CapNhatDonHang(DonHang donHang, List<CT_DonHang> ctDonHangs) {
+    @Transactional
+    public DonHangResponse CapNhatDonHang(CapNhatDonHangRequest request) {
+        DonHang dh = donHangRepo.findById(request.getMaDH())
+                .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
 
-    // Lấy đơn hàng cũ
-    DonHang dh = donHangRepo.findById(donHang.getMaDH())
-            .orElseThrow(() -> new RuntimeException("Đơn hàng không tồn tại"));
+        BigDecimal tongTien = BigDecimal.ZERO;
 
-    // Update các thông tin cơ bản nếu FE gửi
-    if (donHang != null) {
-        dh.setNgayLap(donHang.getNgayLap());
-        dh.setMaNV(donHang.getMaNV());
-        dh.setMaKH(donHang.getMaKH());
-    }
+        List<CT_DonHang> chiTietCu = chiTietDonHangRepo.findByMaDH(dh.getMaDH());
 
-    BigDecimal tongTien = BigDecimal.ZERO;
+        for (ChiTietDonHangRequest ctReq : request.getChiTiet()) {
+            CT_DonHang ctCu = chiTietCu.stream()
+                    .filter(ct -> ct.getMaSP().equals(ctReq.getMaSP()))
+                    .findFirst()
+                    .orElseThrow(() -> new RuntimeException("Chi tiết sản phẩm không tồn tại"));
 
+            int delta = ctCu.getSoLuong() - ctReq.getSoLuong(); // dương = trả hàng, âm = mua thêm
+            sanPhamRepo.tangSoLuong(ctCu.getMaSP(), delta);
 
-    if (ctDonHangs != null && !ctDonHangs.isEmpty()) {
+            ctCu.setSoLuong(ctReq.getSoLuong());
+            ctCu.setThanhTien(ctCu.getDonGia().multiply(BigDecimal.valueOf(ctReq.getSoLuong())));
+            chiTietDonHangRepo.save(ctCu);
 
-        // Lấy danh sách cũ
-        List<CT_DonHang> ctOldList = chiTietDonHangRepo.findByMaDH(dh.getMaDH());
-
-        List<Integer> newIds = ctDonHangs.stream()
-                .filter(ct -> ct.getMaCTDH() > 0)
-                .map(CT_DonHang::getMaCTDH)
-                .toList();
-
-        // Xóa chi tiết cũ không còn trong request
-        for (CT_DonHang old : ctOldList) {
-            if (!newIds.contains(old.getMaCTDH())) {
-                chiTietDonHangRepo.delete(old);
-            }
+            tongTien = tongTien.add(ctCu.getThanhTien());
         }
 
-        // Cập nhật hoặc thêm mới chi tiết
-        for (CT_DonHang ct : ctDonHangs) {
+        dh.setTongTien(tongTien);
+        donHangRepo.save(dh);
 
-            if (ct.getMaCTDH() >0) {
-                ct.setDonHang(dh);
-                chiTietDonHangRepo.save(ct);
-                BigDecimal thanhTien = ct.getDonGia().multiply(BigDecimal.valueOf(ct.getSoLuong()));
-                tongTien = tongTien.add(thanhTien);
-            } else {
-                CT_DonHang ctOld = chiTietDonHangRepo.findById(ct.getMaCTDH())
-                .orElseThrow(() -> new RuntimeException("Chi tiết không tồn tại"));
-
-                // cập nhật số lượng + đơn giá
-                ctOld.setSoLuong(ct.getSoLuong());
-                ctOld.setDonGia(ct.getDonGia());
-
-                // tính thành tiền = donGia * soLuong
-                BigDecimal thanhTien = ct.getDonGia()
-                .multiply(BigDecimal.valueOf(ct.getSoLuong()));
-
-                ctOld.setThanhTien(thanhTien);
-
-                // cộng tổng tiền
-                tongTien = tongTien.add(thanhTien);
-            }
-        }
+        return mapToResponse(dh);
     }
 
-    // Cập nhật tổng tiền đơn hàng
-    dh.setTongTien(tongTien);
 
-    return donHangRepo.save(dh);
+@Override
+public List<DonHangResponse> searchDonHang(String keyword) {
+    if (keyword == null || keyword.trim().isEmpty()) {
+        return List.of();
+    }
+
+    // Gọi repository
+    List<DonHang> donHangs = donHangRepo.searchByKeyword(keyword.trim());
+
+    return donHangs.stream()
+                   .map(this::mapToResponse)
+                   .collect(Collectors.toList());
 }
+
 
 
     

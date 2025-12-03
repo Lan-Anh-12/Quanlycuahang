@@ -3,7 +3,7 @@ import lombok.Data;
 
 @Data
 public class ChangePasswordRequest {
-    private int maTK;
+    private String maTK;
     private String mkCu;
     private String mkMoi;
 }

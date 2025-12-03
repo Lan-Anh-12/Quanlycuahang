@@ -1,32 +1,54 @@
 package example.com.Controller.quanly;
 
-import example.com.Service.auth.LoginHistoryService;
-import example.com.model.Lichsudangnhap;
+import example.com.Service.staff.NhanVienService;
+import example.com.Dto.nhanvien.NhanVienResponse;
+import example.com.Dto.nhanvien.NhanVienWithTaiKhoanRequest;
+import example.com.Dto.nhanvien.NhanVienRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/login-history")
+@RequestMapping("/quanly/nhanvien")
 public class QuanLyNhanVienController {
 
     @Autowired
-    private LoginHistoryService loginHistoryService;
+    private NhanVienService nhanVienService;
 
-    // Tạo lịch sử đăng nhập
-    @PostMapping("/create")
-    @PreAuthorize("hasAnyRole('QuanLy','NhanVien')")
-    public Lichsudangnhap taoLichSu(@RequestBody Lichsudangnhap lichsu) {
-        return loginHistoryService.TaoLichSuDangNhap(lichsu);
-    }
-
-    // Lấy lịch sử theo IP
-    @GetMapping("/by-ip")
+    // Lấy tất cả nhân viên
+    @GetMapping("/tatca")
     @PreAuthorize("hasAnyRole('QuanLy')")
-    public List<Lichsudangnhap> layLichSuTheoIp(@RequestParam String ip) {
-        return loginHistoryService.LayLichSuTheoIp(ip);
+    public ResponseEntity<List<NhanVienResponse>> layTatCaNhanVien() {
+        List<NhanVienResponse> list = nhanVienService.layTatCa();
+        return ResponseEntity.ok(list);
     }
+    // tìm theo tên nhân viên
+    @GetMapping("/timkiem")
+    @PreAuthorize("hasAnyRole('QuanLy')")
+    public ResponseEntity<List<NhanVienResponse>> timTheoTen(@RequestParam String tenNV) {
+        List<NhanVienResponse> list = nhanVienService.timTheoTen(tenNV);
+        return ResponseEntity.ok(list);
+    }
+    // Thêm nhân viên (kèm tài khoản)
+    @PostMapping("/taomoi")
+    @PreAuthorize("hasAnyRole('QuanLy')")
+    public ResponseEntity<NhanVienResponse> taoNhanVien(@RequestBody NhanVienWithTaiKhoanRequest nvRequest) {
+        NhanVienResponse nvResponse = nhanVienService.taoNhanVien(nvRequest);
+        return ResponseEntity.ok(nvResponse);
+    }
+
+    // xóa nhân viên (đổi trạng thái)
+    @DeleteMapping("/xoa/{maNV}")
+    @PreAuthorize("hasAnyRole('QuanLy')")
+    public ResponseEntity<Void> xoaNhanVien(@PathVariable String maNV) {
+        nhanVienService.xoaNhanVien(maNV);
+        return ResponseEntity.ok().build();
+    }
+
+ 
+
 }

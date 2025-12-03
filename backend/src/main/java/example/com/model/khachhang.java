@@ -2,14 +2,15 @@ package example.com.model;
 import jakarta.persistence.*;
 import java.util.List;
 
+import example.com.model.khoachinh.KhachHangIdGenerator;
+
 
 @Entity
 @Table(name = "khachhang")
 public class KhachHang {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaKH")
-    private int maKH;
+    @Column(name = "MaKH", length = 20)
+    private String maKH;
 
     @Column(name = "HoTen")
     private String tenKH;   
@@ -17,8 +18,6 @@ public class KhachHang {
     private int namSinh;
     @Column(name = "DiaChi")
     private String diaChi;
-    @Column(name = "DiemTichLuy")
-    private int diemTichLuy;
     @Column(name = "sdt")
     private String sdt;
 
@@ -27,19 +26,25 @@ public class KhachHang {
     
     public KhachHang() {}
 
-    public KhachHang(int MaKH, String TenKH, int NamSinh, String DiaChi, int DiemTichLuy, String sdt) {
+    @PrePersist
+    public void generateMaKH() {
+        if (this.maKH == null || this.maKH.isEmpty()) {
+            this.maKH = KhachHangIdGenerator.generateNextId();
+        }
+    }
+
+    public KhachHang(String MaKH, String TenKH, int NamSinh, String DiaChi, String sdt) {
         this.maKH = MaKH;
         this.tenKH = TenKH;
         this.namSinh = NamSinh;
         this.diaChi = DiaChi;
-        this.diemTichLuy = DiemTichLuy;
         this.sdt = sdt;
     }
     // Getters and Setters
-    public int getMaKH() {
+    public String getMaKH() {
         return maKH;
     }
-    public void setMaKH(int maKH) {
+    public void setMaKH(String maKH) {
         this.maKH = maKH;
     }
     public String getTenKH() {
@@ -60,12 +65,7 @@ public class KhachHang {
     public void setDiaChi(String diaChi) {
         this.diaChi = diaChi;
     }
-    public int getDiemTichLuy() {
-        return diemTichLuy;
-    }
-    public void setDiemTichLuy(int diemTichLuy) {
-        this.diemTichLuy = diemTichLuy;
-    }
+    
     public String getsdt() {
         return sdt;
     }

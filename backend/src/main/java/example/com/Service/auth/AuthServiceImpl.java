@@ -1,75 +1,84 @@
 package example.com.Service.auth;
 
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
+import example.com.Repository.NhanVienRepository;
 import example.com.Repository.TaiKhoanRepository;
+import example.com.model.NhanVien;
 import example.com.model.TaiKhoan;
 
-
-
 @Service 
-public class AuthServiceImpl implements AuthService{
+public class AuthServiceImpl implements AuthService {
+
     @Autowired 
     private TaiKhoanRepository taiKhoanRepository;
-    
-    @Autowired 
+
+    @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private NhanVienRepository nhanVienRepository;
 
     @Override
     public String DangNhap(String username, String matkhau) {
-        // Tìm tài khoản 
-        TaiKhoan tk = taiKhoanRepository.findByUsername( username)
-        .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+        TaiKhoan tk = taiKhoanRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-        // kiểm tra mật khẩu
-        if(!matkhau.equals(tk.getMatKhau())) {
+        if (!passwordEncoder.matches(matkhau, tk.getMatKhau())) {
             throw new RuntimeException("Sai mật khẩu");
         }
+         NhanVien nv = nhanVienRepository.findByMaTK(tk.getMaTK())
+        .orElseThrow(() -> new RuntimeException("Nhân viên không tồn tại"));
 
-        // tạo jwt trả cho client
-        String token = jwtUtil.generateToken(tk.getUsername(),tk.getRole());
-
-        return token;
-    }
-
-    @Override
-    public String refeshToken(String refreshToken){
-        // kiểm tra token họp lệ
-        if(!jwtUtil.validateToken(refreshToken)) {
-            throw new RuntimeException("Refresh token không hợp lệ");
-            }
-    
-        // lấy username
-        String username = jwtUtil.extractUsername(refreshToken);
-
-        TaiKhoan tk = taiKhoanRepository.findByUsername( username)
-        .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
-        if (tk == null) {
-        throw new RuntimeException("Tài khoản không tồn tại");
-    }
+        if (!"LamViec".equals(nv.getTrangThai())) {
+            throw new RuntimeException("Nhân viên hiện không làm việc, không thể đăng nhập");
+        }
 
         return jwtUtil.generateToken(tk.getUsername(), tk.getRole());
     }
 
     @Override
-    public void DangXuat(String token){
-        
+    public String refeshToken(String refreshToken) {
+        if (!jwtUtil.validateToken(refreshToken)) {
+            throw new RuntimeException("Refresh token không hợp lệ");
+        }
+
+        String username = jwtUtil.extractUsername(refreshToken);
+
+        TaiKhoan tk = taiKhoanRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+
+        return jwtUtil.generateToken(tk.getUsername(), tk.getRole());
+    }
+
+    @Override
+    public void DangXuat(String token) {
+        // Nếu dùng JWT stateless thì không cần làm gì
     }
 
     @Override 
-    public void doiMatKhau(int maTK, String mkCu, String mkMoi) {
+    public void doiMatKhau(String maTK, String mkCu, String mkMoi) {
         TaiKhoan tk = taiKhoanRepository.findById(maTK)
-        .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+            .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
 
-        if (!tk.getMatKhau().equals(mkCu)) {
+        if (!passwordEncoder.matches(mkCu, tk.getMatKhau())) {
             throw new RuntimeException("Mật khẩu cũ không đúng");
         }
 
-        tk.setMatKhau(mkMoi);
+        tk.setMatKhau(passwordEncoder.encode(mkMoi));
         taiKhoanRepository.save(tk);
     }
 
-    
+    @Override
+    public String getMaTKByUsername(String username) {
+        TaiKhoan tk = taiKhoanRepository.findByUsername(username)
+            .orElseThrow(() -> new RuntimeException("Tài khoản không tồn tại"));
+
+        return tk.getMaTK();
+    }
 }

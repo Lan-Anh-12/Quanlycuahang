@@ -3,13 +3,14 @@ package example.com.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
+import example.com.model.khoachinh.NhanVienIdGenerator;
+
 @Entity
 @Table(name = "nhanvien")
 public class NhanVien {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaNV")
-    private int maNV;
+    @Column(name = "MaNV", length = 20)
+    private String maNV;
 
     @Column(name = "HoTen")
     private String tenNV;
@@ -22,16 +23,23 @@ public class NhanVien {
     @Column(name = "TrangThai")
     private String trangThai;
 
-    @Column(name = "MaTK")
-    private int maTK; // Foreign key to taikhoan
+    @Column(name = "MaTK", length = 20)
+    private String maTK; // Foreign key to taikhoan
 
     @OneToOne
     @JoinColumn(name = "maTK") // cột FK trong bảng nhanvien
     private TaiKhoan taiKhoan;
 
-    public NhanVien() {}   
+    public NhanVien() {}  
+    
+    @PrePersist
+    public void generateMaNV() {
+        if (this.maNV == null || this.maNV.isEmpty()) {
+            this.maNV = NhanVienIdGenerator.generateNextId();
+        }
+    }
 
-    public NhanVien(int MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, Integer MaTK, String trangThai) {
+    public NhanVien(String MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, String MaTK, String trangThai) {
         this.maNV = MaNV;
         this.tenNV = TenNV;
         this.sDT = SDT;
@@ -42,10 +50,10 @@ public class NhanVien {
     }
 
     // Getters and Setters
-    public int getMaNV() {
+    public String getMaNV() {
         return maNV;
     }
-    public void setMaNV(int maNV) {
+    public void setMaNV(String maNV) {
         this.maNV = maNV;
     }
     public String getTenNV() {
@@ -72,10 +80,10 @@ public class NhanVien {
     public void setNgayVaoLam(LocalDate ngayVaoLam) {
         this.ngayVaoLam = ngayVaoLam;
     }
-    public int getMaTK() {
+    public String getMaTK() {
         return maTK;
     }
-    public void setMaTK(int maTK) {
+    public void setMaTK(String maTK) {
         this.maTK = maTK;
     }
     public String getTrangThai() {

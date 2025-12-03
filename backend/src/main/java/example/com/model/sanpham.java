@@ -3,13 +3,14 @@ package example.com.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
+import example.com.model.khoachinh.SanPhamIdGenerator;
+
 @Entity
 @Table(name = "sanpham")
 public class SanPham {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaSP")
-    private int maSP;
+    @Column(name = "MaSP", length = 20)
+    private String maSP;
 
     @Column(name = "tensp")
     private String tenSP;
@@ -28,7 +29,13 @@ public class SanPham {
 
     public SanPham() {}
 
-    public SanPham(int MaSP, String TenSP, BigDecimal DonGia, int SoLuongTon, String MoTa,String url,String phanLoai, String TrangThai) {
+    @PrePersist
+    public void generateMaSP() {
+        if (this.maSP == null || this.maSP.isEmpty()) {
+            this.maSP = SanPhamIdGenerator.generateNextId();
+        }
+    }
+    public SanPham(String MaSP, String TenSP, BigDecimal DonGia, int SoLuongTon, String MoTa,String url,String phanLoai, String TrangThai) {
         this.maSP = MaSP;
         this.tenSP = TenSP;
         this.donGia = DonGia;
@@ -40,10 +47,10 @@ public class SanPham {
     }
     
     // Getters and Setters
-    public int getMaSP() {
+    public String getMaSP() {
         return maSP;
     }
-    public void setMaSP(int maSP) {
+    public void setMaSP(String maSP) {
         this.maSP = maSP;
     }
     public String getTenSP() {

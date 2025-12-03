@@ -4,21 +4,21 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import example.com.model.khoachinh.CTNKIdGenerator;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "ct_nhapkho")
 public class CT_NhapKho {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaCTNK")
-    private int maCTNK;
+    @Column(name = "MaCTNK", length = 20)
+    private String maCTNK;
 
-    @Column(name = "MaNK")
-    private int maNK; // Foreign key to nhapkho
+    @Column(name = "MaNK", length = 20)
+    private String maNK; // Foreign key to nhapkho
 
-    @Column(name = "MaSP")
-    private int maSP;
+    @Column(name = "MaSP", length = 20)
+    private String maSP;
     @Column(name = "SoLuong")
     private int soLuong;
     @Column(name = "DonGia")
@@ -33,7 +33,14 @@ public class CT_NhapKho {
 
     public CT_NhapKho() {}
 
-    public CT_NhapKho(int MaCTNK, int MaNK, int MaSP, int SoLuong, BigDecimal DonGia, BigDecimal ThanhTien) {
+    @PrePersist
+    public void generateMaCTNK() {
+        if (this.maCTNK == null || this.maCTNK.isEmpty()) {
+            this.maCTNK = CTNKIdGenerator.generateNextId();
+        }
+    }
+
+    public CT_NhapKho(String MaCTNK, String MaNK, String MaSP, int SoLuong, BigDecimal DonGia, BigDecimal ThanhTien) {
         this.maCTNK = MaCTNK;
         this.maNK = MaNK;
         this.maSP = MaSP;
@@ -43,22 +50,22 @@ public class CT_NhapKho {
     }
 
     // Getters and Setters
-    public int getMaCTNK() {
+    public String getMaCTNK() {
         return maCTNK;
     }
-    public void setMaCTNK(int maCTNK) {
+    public void setMaCTNK(String maCTNK) {
         this.maCTNK = maCTNK;
     }
-    public int getMaNK() {
+    public String getMaNK() {
         return maNK;
     }
-    public void setMaNK(int maNK) {
+    public void setMaNK(String maNK) {
          this.maNK = maNK;
     }
-    public int getMaSP() {
+    public String getMaSP() {
         return maSP;
     }
-    public void setMaSP(int maSP) {
+    public void setMaSP(String maSP) {
         this.maSP = maSP;
     }
     public int getSoLuong() {

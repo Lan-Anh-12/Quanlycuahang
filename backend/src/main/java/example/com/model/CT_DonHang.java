@@ -3,21 +3,21 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import example.com.model.khoachinh.CTDHIdGenerator;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "ct_donhang")
 public class CT_DonHang {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaCTDH")
-    private int maCTDH;
+    @Column(name = "MaCTDH", length = 20)
+    private String maCTDH;
 
-    @Column(name = "MaDH")
-    private int maDH; // Foreign key to donhang
+    @Column(name = "MaDH", length = 20)
+    private String maDH; // Foreign key to donhang
 
-    @Column(name = "MaSP")
-    private int maSP;
+    @Column(name = "MaSP", length = 20)
+    private String maSP;
     @Column(name = "SoLuong")
     private int soLuong;
     @Column(name = "DonGia")
@@ -32,7 +32,15 @@ public class CT_DonHang {
 
     public CT_DonHang() {}
 
-    public CT_DonHang(int MaCTDH, int MaDH, int MaSP, int SoLuong, BigDecimal DonGia, BigDecimal ThanhTien) {
+    @PrePersist
+    public void generateMaCTDH() {
+        if (this.maCTDH == null || this.maCTDH.isEmpty()) {
+            // Gọi service hoặc logic tạo mã
+            this.maCTDH = CTDHIdGenerator.generateNextId();
+        }
+    }
+
+    public CT_DonHang(String MaCTDH, String MaDH, String MaSP, int SoLuong, BigDecimal DonGia, BigDecimal ThanhTien) {
         this.maCTDH = MaCTDH;
         this.maDH = MaDH;
         this.maSP = MaSP;
@@ -42,22 +50,22 @@ public class CT_DonHang {
 
     }
     // Getters and Setters
-    public int getMaCTDH() {
+    public String getMaCTDH() {
         return maCTDH;
     }
-    public void setMaCTDH(int maCTDH) {
+    public void setMaCTDH(String maCTDH) {
         this.maCTDH = maCTDH;
     }
-    public int getMaDH() {
+    public String getMaDH() {
         return maDH;
     }
-    public void setMaDH(int maDH) {
+    public void setMaDH(String maDH) {
         this.maDH = maDH;
     }
-    public int getMaSP() {
+    public String getMaSP() {
         return maSP;
     }
-    public void setMaSP(int maSP) {
+    public void setMaSP(String maSP) {
         this.maSP = maSP;
     }
     public int getSoLuong() {

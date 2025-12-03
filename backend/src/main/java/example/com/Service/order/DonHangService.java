@@ -3,23 +3,24 @@ package example.com.Service.order;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import example.com.Dto.donhang.ChiTietDonHangResponse;
 import example.com.Dto.donhang.DonHangRequest;
 import example.com.Dto.donhang.DonHangResponse;
-import example.com.model.CT_DonHang;
-import example.com.model.DonHang;
+import example.com.Dto.donhang.CapNhatDonHangRequest;
+
 
 public interface DonHangService {
     //CRUD 
-    DonHangResponse TaoDonHang(DonHang donHang, List<CT_DonHang> chiTietDonHangs);
-    void XoaDonHang(int maDH);
-    DonHang CapNhatDonHang(DonHang donHang, List<CT_DonHang> ct_DonHang);
+    DonHangResponse TaoDonHang(DonHangRequest donHangRequest);
+    DonHangResponse CapNhatDonHang(CapNhatDonHangRequest request);
 
     // lấy đơn hàng, ct đơn hàng
-    List<DonHang> layHetDonHang();
-    List<DonHang> LayDonHangTheoKhachHang(int maKH);
-    List<CT_DonHang> LayChiTietDonHangTheoDonHang(int maDH);
-    List<DonHang> XemDonHangNVLap(int maVN);
-    List<DonHang> LayDonHangTheoKhoangNgay(LocalDateTime start, LocalDateTime end);
-    
+    List<DonHangResponse> layHetDonHang(); 
+    List<DonHangResponse> LayDonHangTheoKhachHang(String maKH);
+    List<ChiTietDonHangResponse> LayChiTietDonHangTheoDonHang(String maDH);
+    List<DonHangResponse> XemDonHangNVLap(String maNV);
+    List<DonHangResponse> LayDonHangTheoKhoangNgay(LocalDateTime start, LocalDateTime end);
+    List<DonHangResponse> searchDonHang(String keyword);// lấy theo mã dh or kh or nhân viên
+
     
 }

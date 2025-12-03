@@ -11,34 +11,38 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
-public interface DonHangRepository extends JpaRepository<DonHang, Integer> {
+public interface DonHangRepository extends JpaRepository<DonHang, String> {
+
     // Tìm đơn theo mã KH
-    List<DonHang> findByMaKH(int MaKH);
+    List<DonHang> findByMaKH(String maKH);
 
-     // Tìm đơn theo tháng
-    @Query("SELECT d FROM DonHang d WHERE MONTH(d.ngayLap) =:month")
-    List<DonHang> finByMonth(@Param("month") int month );
+    // Tìm đơn theo tháng
+    @Query("SELECT d FROM DonHang d WHERE MONTH(d.ngayLap) = :month")
+    List<DonHang> findByMonth(@Param("month") int month);
 
-    //  Tính tổng doanh thu theo tháng
+    // Tính tổng doanh thu theo tháng
     @Query("SELECT SUM(d.tongTien) FROM DonHang d WHERE MONTH(d.ngayLap) = :month")
     BigDecimal doanhThuTheoThang(@Param("month") int month);
 
-    //  Tìm đơn của nhân viên
-    List<DonHang> findByMaNV(int maNV);
+    // Tìm đơn theo mã nhân viên
+    List<DonHang> findByMaNV(String maNV);
 
-    // Lấy đơn hàng theo mã (chi tiết 1 đơn)
-    Optional<DonHang> findByMaDH(int maDH);
+    // Tìm đơn theo mã đơn hàng
+    Optional<DonHang> findByMaDH(String maDH);
 
-    // Tìm đơn trong 1 khoảng thời gian
-    List<DonHang> findByngayLapBetween(LocalDateTime start, LocalDateTime end);
+    // Tìm đơn trong khoảng thời gian
+    List<DonHang> findByNgayLapBetween(LocalDateTime start, LocalDateTime end);
 
-     // Tổng tiền khách đã chi (phục vụ ưu đãi)
+    // Tổng tiền khách đã chi
     @Query("SELECT SUM(d.tongTien) FROM DonHang d WHERE d.maKH = :maKH")
-    BigDecimal tongTienChiCuaKhach(@Param("maKH") int maKH);
+    BigDecimal tongTienChiCuaKhach(@Param("maKH") String maKH);
 
-    // Số lượng đơn khách đã mua
+    // Số đơn khách đã mua
     @Query("SELECT COUNT(d) FROM DonHang d WHERE d.maKH = :maKH")
-    int soDonHangCuaKhach(@Param("maKH") int maKH);
-    
+    int soDonHangCuaKhach(@Param("maKH") String maKH);
+
+    // Tìm đơn hàng theo từ khóa (mã đơn hàng, mã khách hàng, mã nhân viên)
+    @Query("SELECT d FROM DonHang d WHERE d.maDH LIKE %:keyword% OR d.maKH LIKE %:keyword% OR d.maNV LIKE %:keyword%")
+    List<DonHang> searchByKeyword(@Param("keyword") String keyword);
 
 }

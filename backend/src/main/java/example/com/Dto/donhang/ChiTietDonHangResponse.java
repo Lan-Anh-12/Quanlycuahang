@@ -6,8 +6,8 @@ import lombok.Data;
 
 @Data
 public class ChiTietDonHangResponse {
-    private Integer maCTDH;
-    private Integer maSP;
+    private String maCTDH;
+    private String maSP;
     private Integer soLuong;
     private BigDecimal donGia;
     private BigDecimal thanhTien;

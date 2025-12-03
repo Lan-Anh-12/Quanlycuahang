@@ -10,9 +10,9 @@ import lombok.Data;
 
 @Data
 public class DonHangResponse {
-    private Integer maDH;
-    private Integer maKH;
-    private Integer maNV;
+    private String maDH;
+    private String maKH;
+    private String maNV;
     private LocalDateTime ngayLap;
     private BigDecimal tongTien;
 

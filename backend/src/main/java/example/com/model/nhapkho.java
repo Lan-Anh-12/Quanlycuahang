@@ -3,18 +3,20 @@ package example.com.model;
 import java.math.BigDecimal;
 import jakarta.persistence.*;
 import java.util.List;
+
+import example.com.model.khoachinh.NhapKhoIdGenerator;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "nhapkho")
 public class NhapKho {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaNK")
-    private int maNK;
+    @Column(name = "MaNK", length = 20)
+    private String maNK;
 
-    @Column(name = "MaNV")
-    private int maNV; // Foreign key to nhanvien
+    @Column(name = "MaNV", length = 20)
+    private String maNV; // Foreign key to nhanvien
 
     @Column(name = "NhaCungCap")
     private String nhaCungCap;
@@ -28,7 +30,13 @@ public class NhapKho {
 
     public NhapKho() {}
 
-    public NhapKho( int MaNK, int MaNV, String NhaCungCap, BigDecimal TongTien) {
+    @PrePersist
+    public void generateMaNK() {
+        if (this.maNK == null || this.maNK.isEmpty()) {
+            this.maNK = NhapKhoIdGenerator.generateNextId();
+        }
+    }
+    public NhapKho( String MaNK, String MaNV, String NhaCungCap, BigDecimal TongTien) {
         
         this.maNK = MaNK;
         this.maNV = MaNV;
@@ -36,22 +44,22 @@ public class NhapKho {
         this.tongTien = TongTien;
     }
     // Getters and Setters
-    public int getMaNK() {
+    public String getMaNK() {
         return maNK;
     }
-    public void setMaNK(int maNK) {
+    public void setMaNK(String maNK) {
         this.maNK = maNK;
     }
-    public java.util.List<CT_NhapKho> getChiTietNhapKhos() {
+    public List<CT_NhapKho> getChiTietNhapKhos() {
         return chiTietNhapKhos;
     }
     public void setChiTietNhapKhos(List<CT_NhapKho> chiTietNhapKhos) {
         this.chiTietNhapKhos = chiTietNhapKhos;
     }
-    public int getMaNV() {
+    public String getMaNV() {
         return maNV;
     }
-    public void setMaNV(int maNV) {
+    public void setMaNV(String maNV) {
         this.maNV = maNV;
     }
     public String getNhaCungCap() {
@@ -59,6 +67,12 @@ public class NhapKho {
     }
     public void setNhaCungCap(String nhaCungCap) {
         this.nhaCungCap = nhaCungCap;
+    }
+    public LocalDateTime getNgayNhap() {
+        return ngayNhap;
+    }
+    public void setNgayNhap(LocalDateTime ngayNhap) {
+        this.ngayNhap = ngayNhap;
     }
     public BigDecimal getTongTien() {
         return tongTien;

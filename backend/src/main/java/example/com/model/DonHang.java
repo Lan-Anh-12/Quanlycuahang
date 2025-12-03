@@ -7,21 +7,22 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
+import example.com.model.khoachinh.DonHangIdGenerator;
+
 
 @Entity
 @Table(name = "donhang")
 public class DonHang {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaDH")
-    private int maDH;
+    @Column(name = "MaDH", length = 20)
+    private String maDH;
 
-    @Column(name = "MaKH")
-    private int maKH;
+    @Column(name = "MaKH", length = 20)
+    private String maKH;
 
-    @Column(name = "MaNV")
-    private int maNV;
+    @Column(name = "MaNV", length = 20)
+    private String maNV;
 
     @Column(name = "NgayLap")
     private LocalDateTime ngayLap;
@@ -39,8 +40,16 @@ public class DonHang {
 
 
     public DonHang() {}
+    
+    @PrePersist
+    public void generateMaDH() {
+        if (this.maDH == null || this.maDH.isEmpty()) {
+            this.maDH = DonHangIdGenerator.generateNextId();
+        }
+    }
 
-    public DonHang(int MaDH, int MaKH, int MaNV, LocalDateTime NgayLap, BigDecimal TongTien) {
+
+    public DonHang(String MaDH, String MaKH, String MaNV, LocalDateTime NgayLap, BigDecimal TongTien) {
         this.maDH = MaDH;
         this.maKH = MaKH;
         this.maNV = MaNV;
@@ -48,22 +57,22 @@ public class DonHang {
         this.tongTien = TongTien;
     }
     // Getters and Setters
-    public int getMaDH() {
+    public String getMaDH() {
         return maDH;
     }
-    public void setMaDH(int maDH) {
+    public void setMaDH(String maDH) {
         this.maDH = maDH;
     }
-    public int getMaKH() {
+    public String getMaKH() {
         return maKH;
     }
-    public void setMaKH(int maKH) {
+    public void setMaKH(String maKH) {
         this.maKH = maKH;
     }
-    public int getMaNV() {
+    public String getMaNV() {
         return maNV;
     }
-    public void setMaNV(int maNV) {
+    public void setMaNV(String maNV) {
         this.maNV = maNV;
     }
     public LocalDateTime getNgayLap() {

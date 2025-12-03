@@ -1,4 +1,4 @@
-package example.com.Dto;
+package example.com.Dto.thongke;
 
 import java.math.BigDecimal;
 import lombok.Data;

@@ -1,18 +1,17 @@
 package example.com.Controller.nhanvien;
 
-
 import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.http.ResponseEntity;
 
 import example.com.Dto.donhang.DonHangRequest;
 import example.com.Dto.donhang.DonHangResponse;
+import example.com.Dto.khachhang.KhachHangResponse;
 import example.com.Service.order.DonHangService;
 import example.com.model.DonHang;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
-
 import java.util.List;
-import java.time.LocalDateTime;
 
 @CrossOrigin(origins = "http://localhost:5173")
 @RestController
@@ -22,20 +21,31 @@ public class NhanVienDonHangController {
     @Autowired
     private DonHangService donHangService;
 
-    @PostMapping("/tao")
+    // Tạo đơn hàng
+    @PostMapping
     @PreAuthorize("hasAnyRole('NhanVien')")
-    public DonHangResponse taoDonHang(@RequestBody DonHangRequest req) {
-    return donHangService.TaoDonHang(req.getDonHang(), req.getChiTietDonHangs());
-}
+    public ResponseEntity<DonHangResponse> taoDonHang(@RequestBody DonHangRequest req) {
+        DonHangResponse response = donHangService.TaoDonHang(req);
+        return ResponseEntity.ok(response);
+    }
 
+    // Lấy đơn hàng nhân viên lập
     @GetMapping("/nhanvien")
     @PreAuthorize("hasAnyRole('NhanVien')")
-    public List<DonHang> LayDonHangNhanVienLap(@RequestParam int maNV) {
-        return donHangService.XemDonHangNVLap(maNV);
+    public ResponseEntity<List<DonHangResponse>> layDonHangNhanVien(@RequestParam String maNV) {
+        List<DonHangResponse> list = donHangService.XemDonHangNVLap(maNV);
+        if(list.isEmpty()) return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(list);
     }
+
+    // Lấy đơn hàng theo khách hàng
     @GetMapping("/khachhang")
     @PreAuthorize("hasAnyRole('NhanVien')")
-    public List<DonHang> LayDonHang_KH(@RequestParam int maKH) {
-        return donHangService.LayDonHangTheoKhachHang(maKH);
+    public ResponseEntity<List<DonHangResponse>> layDonHangKhachHang(@RequestParam String maKH) {
+        List<DonHangResponse> list = donHangService.LayDonHangTheoKhachHang(maKH);
+        if(list.isEmpty()) return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(list);
     }
+
+    
 }

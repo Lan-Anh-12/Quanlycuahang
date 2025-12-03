@@ -1,13 +1,13 @@
 package example.com.model;
+import example.com.model.khoachinh.TaiKhoanIdGenerator;
 import jakarta.persistence.*;
 
 @Entity
 @Table(name = "taikhoan")
 public class TaiKhoan {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "MaTK")
-    private int maTK;
+    @Column(name = "MaTK", length = 20)
+    private String maTK;
 
     @Column(name = "username")
     private String username;
@@ -17,18 +17,24 @@ public class TaiKhoan {
     private String role;
 
     public TaiKhoan() {}
-
-    public TaiKhoan(int MaTK, String username, String MatKhau, String Role) {
+    
+    @PrePersist
+    public void generateMaTK() {
+        if (this.maTK == null || this.maTK.isEmpty()) {
+            this.maTK = TaiKhoanIdGenerator.generateNextId();
+        }
+    }
+    public TaiKhoan(String MaTK, String username, String MatKhau, String Role) {
         this.maTK = MaTK;
         this.username = username;
         this.matKhau = MatKhau;
         this.role = Role;
     }
     // Getters and Setters
-    public int getMaTK() {
+    public String getMaTK() {
         return maTK;
     }
-    public void setMaTK(int maTK) {
+    public void setMaTK(String maTK) {
         this.maTK = maTK;
     }
     public String getUsername() {
