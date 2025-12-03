@@ -12,13 +12,12 @@ export default function AddProductPopup({
   onSuccess,
 }: AddProductPopupProps) {
   const [form, setForm] = useState({
-    code: "",
-    name: "",
-    image: "", // ★ thay file → string URL
-    origin: "",
-    shortDesc: "",
-    usage: "",
-    category: "",
+    tensp: "",
+    DonGia: "",
+    SoLuong: "",
+    MoTa: "",
+    PhanLoai: "",
+    image: "",
   });
 
   const handleChange = (e: any) => {
@@ -28,8 +27,7 @@ export default function AddProductPopup({
 
   const handleSubmit = async () => {
     try {
-      await createProduct(form); // ★ gửi JSON, không dùng FormData
-
+      await createProduct(form);
       alert("Thêm sản phẩm thành công!");
       onSuccess();
       onClose();
@@ -42,7 +40,6 @@ export default function AddProductPopup({
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-lg w-[450px] p-6 relative">
-        {/* CLOSE */}
         <button
           className="absolute top-3 right-3 text-2xl hover:text-red-500"
           onClick={onClose}
@@ -56,51 +53,45 @@ export default function AddProductPopup({
 
         <div className="flex flex-col gap-3">
           <input
-            name="code"
-            placeholder="Mã sản phẩm"
-            className="border px-3 py-2 rounded"
-            onChange={handleChange}
-          />
-
-          <input
-            name="name"
+            name="tensp"
             placeholder="Tên sản phẩm"
             className="border px-3 py-2 rounded"
             onChange={handleChange}
           />
 
-          {/* ★ NHẬP URL ẢNH */}
+          <input
+            name="DonGia"
+            placeholder="Đơn giá"
+            type="number"
+            className="border px-3 py-2 rounded"
+            onChange={handleChange}
+          />
+
+          <input
+            name="SoLuong"
+            placeholder="Số lượng"
+            type="number"
+            className="border px-3 py-2 rounded"
+            onChange={handleChange}
+          />
+
+          <textarea
+            name="MoTa"
+            placeholder="Mô tả"
+            className="border px-3 py-2 rounded h-16 resize-none"
+            onChange={handleChange}
+          />
+
+          <input
+            name="PhanLoai"
+            placeholder="Phân loại"
+            className="border px-3 py-2 rounded"
+            onChange={handleChange}
+          />
+
           <input
             name="image"
             placeholder="Link ảnh (URL)"
-            className="border px-3 py-2 rounded"
-            onChange={handleChange}
-          />
-
-          <input
-            name="origin"
-            placeholder="Xuất xứ"
-            className="border px-3 py-2 rounded"
-            onChange={handleChange}
-          />
-
-          <textarea
-            name="shortDesc"
-            placeholder="Mô tả ngắn"
-            className="border px-3 py-2 rounded h-16 resize-none"
-            onChange={handleChange}
-          />
-
-          <textarea
-            name="usage"
-            placeholder="Hướng dẫn sử dụng"
-            className="border px-3 py-2 rounded h-16 resize-none"
-            onChange={handleChange}
-          />
-
-          <input
-            name="category"
-            placeholder="Phân loại"
             className="border px-3 py-2 rounded"
             onChange={handleChange}
           />

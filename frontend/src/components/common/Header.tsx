@@ -1,12 +1,15 @@
 import { useState } from "react";
-import { IoClose } from "react-icons/io5";
+import { IoClose, IoChevronDown } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import LoginPopup from "../common/LoginPopup";
+import ChangePasswordPopup from "../common/ChangePasswordPopup";
 
 export default function Header() {
   const [open, setOpen] = useState(false);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isChangePassOpen, setIsChangePassOpen] = useState(false);
 
   const { user, logout } = useAuth();
 
@@ -40,17 +43,49 @@ export default function Header() {
             </div>
 
             {/* LOGIN / LOGOUT */}
-            <div className="ml-4">
+            <div className="ml-4 relative">
               {user ? (
-                <div className="flex items-center gap-3">
-                  <span className="font-semibold">Xin chào, {user.name}</span>
-
+                <div>
+                  {/* Button hiển thị tên + mũi tên */}
                   <button
-                    onClick={logout}
-                    className="bg-[#537B24] px-3 py-1 rounded text-white hover:bg-[#44651d]"
+                    onClick={() => setMenuOpen(!menuOpen)}
+                    className="flex items-center gap-1 font-semibold hover:opacity-80"
                   >
-                    Đăng xuất
+                    <span>Xin chào, {user.name}</span>
+                    <IoChevronDown />
                   </button>
+
+                  {/* Dropdown menu */}
+                  {menuOpen && (
+                    <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border text-black z-50">
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => {
+                          setIsChangePassOpen(true);
+                          setMenuOpen(false);
+                        }}
+                      >
+                        Đổi mật khẩu
+                      </button>
+
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
+                        onClick={() => {
+                          logout();
+                          setMenuOpen(false);
+                        }}
+                      >
+                        Đăng xuất
+                      </button>
+                    </div>
+                  )}
+
+                  {/* Popup Đổi mật khẩu */}
+                  <ChangePasswordPopup
+                    isOpen={isChangePassOpen}
+                    onClose={() => setIsChangePassOpen(false)}
+                    email={user.email}
+                  />
                 </div>
               ) : (
                 <button
@@ -92,17 +127,13 @@ export default function Header() {
           {/* MENU LIST */}
           <nav className="mt-2">
             {[
-              { label: "TRANG CHỦ", link: "/" },
+              { label: "Trang chủ", link: "/" },
               { label: "Sản Phẩm", link: "/sanpham" },
               { label: "Khách Hàng", link: "/khachhang" },
-              { label: "Nhập Kho", link: "/nhapkho" },
+              { label: "Đơn hàng", link: "/donhang" },
               { label: "Nhân Viên", link: "/nhanvien" },
+              { label: "Nhập Kho", link: "/nhapkho" },
               { label: "Thống Kê", link: "/thongke" },
-              { label: "TÚI RÚT", link: "/tui-rut" },
-              { label: "TÚI VẢI XUẤT KHẨU", link: "/tui-xuat-khau" },
-              { label: "TÚI VẢI ÉP NHIỆT", link: "/tui-ep-nhiet" },
-              { label: "CUNG CẤP VẢI KHÔNG DỆT", link: "/vai-khong-det" },
-              { label: "TIN TỨC", link: "/tin-tuc" },
             ].map((item, i) => (
               <Link
                 key={i}

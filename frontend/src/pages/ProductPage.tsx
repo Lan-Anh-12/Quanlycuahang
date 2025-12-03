@@ -74,7 +74,7 @@ export default function ProductPage() {
             onClick={handleSearch}
             className="bg-[#537B24] text-white px-4 py-2 rounded hover:bg-[#44651d]"
           >
-            Tìm
+            Tìm kiếm
           </button>
 
           <select

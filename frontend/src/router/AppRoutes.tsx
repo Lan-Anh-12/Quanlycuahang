@@ -7,6 +7,10 @@ import AdminLayout from "../layouts/AdminLayout";
 import HomePage from "../pages/HomePage";
 import ProductPage from "../pages/ProductPage";
 import ProductDetail from "../pages/ProductDetail";
+import CustomerManagement from "../pages/CustomerManagement";
+import EmployeeManagement from "../pages/EmployeeManagement";
+import OrderManagement from "../pages/OrderManagement";
+import ImportManagement from "../pages/ImportPage";
 // import CartPage from "../pages/CartPage";
 // import NotFound from "../pages/NotFound";
 
@@ -18,7 +22,10 @@ const AppRoutes = () => {
         <Route index element={<HomePage />} />
         <Route path="sanpham" element={<ProductPage />} />
         <Route path="/products/:id" element={<ProductDetail />} />
-        {/* <Route path="cart" element={<CartPage />} /> */}
+        <Route path="/khachhang" element={<CustomerManagement />} />
+        <Route path="/nhanvien" element={<EmployeeManagement />} />
+        <Route path="/donhang" element={<OrderManagement />} />
+        <Route path="/nhapkho" element={<ImportManagement />} />
       </Route>
 
       {/* 404 */}

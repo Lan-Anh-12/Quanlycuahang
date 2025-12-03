@@ -16,6 +16,34 @@ export default function LoginPopup({ isOpen, onClose }: Props) {
 
   if (!isOpen) return null;
 
+  // ============================
+  // MOCK DATA
+  // ============================
+  const mockUsers = [
+    {
+      email: "admin@example.com",
+      password: "123456",
+      user: {
+        id: 1,
+        name: "Admin",
+        email: "admin@example.com",
+        role: "ADMIN",
+      },
+      token: "fake-jwt-token-admin-123456",
+    },
+    {
+      email: "staff01@gmail.com",
+      password: "123456",
+      user: {
+        id: 2,
+        name: "Nguyễn Văn A",
+        email: "staff01@gmail.com",
+        role: "STAFF",
+      },
+      token: "fake-jwt-token-staff-987654",
+    },
+  ];
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -27,6 +55,7 @@ export default function LoginPopup({ isOpen, onClose }: Props) {
         body: JSON.stringify({ email, password }),
       });
 
+      // SERVER TRẢ VỀ
       const data = await res.json();
 
       if (!res.ok) {
@@ -34,12 +63,25 @@ export default function LoginPopup({ isOpen, onClose }: Props) {
         return;
       }
 
-      // gọi context để lưu user + token
       login(data.user, data.token);
-
-      onClose(); // đóng popup
+      onClose();
     } catch (err) {
-      setError("Không thể kết nối server");
+      // ===============================
+      // FALLBACK → MOCK LOGIN
+      // ===============================
+      console.log("Server không chạy, dùng dữ liệu mock...");
+
+      const found = mockUsers.find(
+        (u) => u.email === email && u.password === password
+      );
+
+      if (!found) {
+        setError("Sai email hoặc mật khẩu (mock)");
+        return;
+      }
+
+      login(found.user, found.token);
+      onClose();
     }
   };
 
