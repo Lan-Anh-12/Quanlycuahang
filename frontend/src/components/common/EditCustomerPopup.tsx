@@ -13,25 +13,30 @@ const EditCustomerPopup: React.FC<EditCustomerPopupProps> = ({
   onClose,
   onSuccess,
 }) => {
-  const [hoTen, setHoTen] = useState(customer.hoTen);
-  const [namSinh, setNamSinh] = useState(customer.namSinh); // 🔥 moved up
+  const [tenKH, setHoTen] = useState(customer.tenKH);
+  const [namSinh, setNamSinh] = useState(customer.namSinh);
   const [diaChi, setDiaChi] = useState(customer.diaChi);
   const [sdt, setSdt] = useState(customer.sdt);
 
   const handleSave = async () => {
-    await updateCustomer(customer.id, {
-      hoTen,
-      namSinh, // 🔥 added correctly
-      diaChi,
-      sdt,
-    });
+    try {
+      await updateCustomer(customer.maKH, {
+        tenKH: tenKH, // map đúng với BE
+        namSinh,
+        diaChi,
+        sdt,
+      });
 
-    onSuccess();
-    onClose();
+      onSuccess();
+      onClose();
+    } catch (error) {
+      console.error("Lỗi khi cập nhật khách hàng:", error);
+      alert("Cập nhật thất bại!");
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
+    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
       <div className="bg-white p-4 rounded-lg w-[400px] shadow-lg">
         <h2 className="text-lg font-semibold mb-3">Sửa khách hàng</h2>
 
@@ -39,11 +44,11 @@ const EditCustomerPopup: React.FC<EditCustomerPopupProps> = ({
         <label className="block mb-2 font-medium">Họ tên</label>
         <input
           className="w-full border p-2 rounded mb-3"
-          value={hoTen}
+          value={tenKH}
           onChange={(e) => setHoTen(e.target.value)}
         />
 
-        {/* 🔥 Năm sinh ngay sau họ tên */}
+        {/* Năm sinh */}
         <label className="block mb-2 font-medium">Năm sinh</label>
         <input
           type="number"
@@ -69,7 +74,10 @@ const EditCustomerPopup: React.FC<EditCustomerPopupProps> = ({
         />
 
         <div className="flex justify-end gap-2">
-          <button className="px-3 py-2 bg-gray-300 rounded" onClick={onClose}>
+          <button
+            className="px-3 py-2 bg-gray-300 rounded hover:bg-gray-400"
+            onClick={onClose}
+          >
             Hủy
           </button>
           <button

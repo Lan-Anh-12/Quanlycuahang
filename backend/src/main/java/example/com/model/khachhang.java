@@ -2,7 +2,7 @@ package example.com.model;
 import jakarta.persistence.*;
 import java.util.List;
 
-import example.com.model.khoachinh.KhachHangIdGenerator;
+
 
 
 @Entity
@@ -26,13 +26,7 @@ public class KhachHang {
     
     public KhachHang() {}
 
-    @PrePersist
-    public void generateMaKH() {
-        if (this.maKH == null || this.maKH.isEmpty()) {
-            this.maKH = KhachHangIdGenerator.generateNextId();
-        }
-    }
-
+    
     public KhachHang(String MaKH, String TenKH, int NamSinh, String DiaChi, String sdt) {
         this.maKH = MaKH;
         this.tenKH = TenKH;

@@ -11,5 +11,5 @@ public class SanPhamRequest {
     private BigDecimal giaBan;  
     private String moTa;  
     private Integer soLuong;
-    private String urlHinh;
+    private String url;
 }

@@ -75,4 +75,8 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     @Query("UPDATE SanPham sp SET sp.trangThai = :trangThai WHERE sp.maSP = :maSP")
     void updateTrangThai(@Param("maSP") String maSP,
                          @Param("trangThai") String trangThai);
+
+   @Query("SELECT MAX(s.maSP) FROM SanPham s")
+   String findMaxMaSP();
+
 }

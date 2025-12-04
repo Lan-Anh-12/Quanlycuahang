@@ -1,83 +1,64 @@
 import React, { useState } from "react";
-import { updateOrder } from "../../services/orderService";
-import type { Order } from "../../services/orderService";
+import type { OrderRecord, OrderDetail } from "../../services/orderService";
+import { updateOrder, type UpdateOrderRequest } from "../../services/orderService";
 
-interface EditOrderPopupProps {
-  order: Order;
+interface Props {
+  order: OrderRecord;
   onClose: () => void;
   onSuccess: () => void;
+  details: OrderDetail[];
 }
 
-const OrderEditPopup: React.FC<EditOrderPopupProps> = ({
-  order,
-  onClose,
-  onSuccess,
-}) => {
-  const [maKH, setMaKH] = useState(order.MaKH);
-  const [maNV, setMaNV] = useState(order.MaNV);
-  const [ngayLap, setNgayLap] = useState(order.NgayLap);
-  const [tongTien, setTongTien] = useState(order.TongTien);
+const OrderEditPopup: React.FC<Props> = ({ order, onClose, onSuccess, details }) => {
+  // Khởi tạo chi tiết đơn hàng
+  const [chiTiet, setChiTiet] = useState(
+    details.map(d => ({ maSP: d.maSP, soLuong: d.soLuong }))
+  );
+
+  const handleQtyChange = (index: number, value: number) => {
+    setChiTiet(prev =>
+      prev.map((item, i) => (i === index ? { ...item, soLuong: value } : item))
+    );
+  };
 
   const handleSave = async () => {
-    await updateOrder(order.MaDH, {
-      MaKH: maKH,
-      MaNV: maNV,
-      NgayLap: ngayLap,
-      TongTien: tongTien,
-    });
+    const payload: UpdateOrderRequest = {
+      maDH: order.maDH,
+      chiTiet: chiTiet,
+    };
 
-    onSuccess(); // reload lại danh sách
-    onClose(); // đóng popup
+    await updateOrder(payload);
+    onSuccess();
+    onClose();
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center">
-      <div className="bg-white p-5 rounded-lg w-[420px] shadow-lg">
+    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
+      <div className="bg-white p-5 rounded-lg w-[500px] shadow-lg">
         <h2 className="text-lg font-semibold mb-3 text-[#537B24]">
-          Sửa đơn hàng
+          Sửa đơn hàng #{order.maDH}
         </h2>
 
-        {/* Mã KH */}
-        <label className="block mb-1 font-medium">Mã khách hàng</label>
-        <input
-          className="w-full border p-2 rounded mb-3"
-          type="number"
-          value={maKH}
-          onChange={(e) => setMaKH(Number(e.target.value))}
-        />
+        {chiTiet.map((item, idx) => (
+          <div key={item.maSP} className="mb-3 flex gap-2 items-center">
+            <span className="w-1/2">{item.maSP}</span>
+            <input
+              type="number"
+              className="border rounded p-1 w-1/2"
+              value={item.soLuong}
+              onChange={e => handleQtyChange(idx, Number(e.target.value))}
+              min={0}
+            />
+          </div>
+        ))}
 
-        {/* Mã NV */}
-        <label className="block mb-1 font-medium">Mã nhân viên</label>
-        <input
-          className="w-full border p-2 rounded mb-3"
-          type="number"
-          value={maNV}
-          onChange={(e) => setMaNV(Number(e.target.value))}
-        />
-
-        {/* Ngày lập */}
-        <label className="block mb-1 font-medium">Ngày lập</label>
-        <input
-          className="w-full border p-2 rounded mb-3"
-          type="date"
-          value={ngayLap}
-          onChange={(e) => setNgayLap(e.target.value)}
-        />
-
-        {/* Tổng tiền */}
-        <label className="block mb-1 font-medium">Tổng tiền</label>
-        <input
-          className="w-full border p-2 rounded mb-4"
-          type="number"
-          value={tongTien}
-          onChange={(e) => setTongTien(Number(e.target.value))}
-        />
-
-        <div className="flex justify-end gap-2">
-          <button className="px-3 py-2 bg-gray-300 rounded" onClick={onClose}>
+        <div className="flex justify-end gap-2 mt-4">
+          <button
+            className="px-3 py-2 bg-gray-300 rounded"
+            onClick={onClose}
+          >
             Hủy
           </button>
-
           <button
             className="px-3 py-2 bg-[#537B24] text-white rounded hover:bg-[#44651d]"
             onClick={handleSave}

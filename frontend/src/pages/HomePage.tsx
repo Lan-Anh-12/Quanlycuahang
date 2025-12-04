@@ -139,7 +139,7 @@ const CategoryPieChart: React.FC<CategoryChartProps> = ({ data }) => {
 
   return (
     <div className="flex justify-center items-center h-[300px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
+      <ResponsiveContainer width="100%" height={300}>
         <PieChart>
           <Pie
             data={data}

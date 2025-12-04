@@ -1,5 +1,5 @@
 package example.com.model;
-import example.com.model.khoachinh.TaiKhoanIdGenerator;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -18,12 +18,7 @@ public class TaiKhoan {
 
     public TaiKhoan() {}
     
-    @PrePersist
-    public void generateMaTK() {
-        if (this.maTK == null || this.maTK.isEmpty()) {
-            this.maTK = TaiKhoanIdGenerator.generateNextId();
-        }
-    }
+    
     public TaiKhoan(String MaTK, String username, String MatKhau, String Role) {
         this.maTK = MaTK;
         this.username = username;

@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 import jakarta.persistence.*;
 import java.util.List;
 
-import example.com.model.khoachinh.NhapKhoIdGenerator;
+
 
 import java.time.LocalDateTime;
 
@@ -30,12 +30,7 @@ public class NhapKho {
 
     public NhapKho() {}
 
-    @PrePersist
-    public void generateMaNK() {
-        if (this.maNK == null || this.maNK.isEmpty()) {
-            this.maNK = NhapKhoIdGenerator.generateNextId();
-        }
-    }
+    
     public NhapKho( String MaNK, String MaNV, String NhaCungCap, BigDecimal TongTien) {
         
         this.maNK = MaNK;

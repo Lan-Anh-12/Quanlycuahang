@@ -3,7 +3,10 @@ package example.com.model;
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
-import example.com.model.khoachinh.SanPhamIdGenerator;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import example.com.Repository.SanPhamRepository;
+
 
 @Entity
 @Table(name = "sanpham")
@@ -29,12 +32,7 @@ public class SanPham {
 
     public SanPham() {}
 
-    @PrePersist
-    public void generateMaSP() {
-        if (this.maSP == null || this.maSP.isEmpty()) {
-            this.maSP = SanPhamIdGenerator.generateNextId();
-        }
-    }
+
     public SanPham(String MaSP, String TenSP, BigDecimal DonGia, int SoLuongTon, String MoTa,String url,String phanLoai, String TrangThai) {
         this.maSP = MaSP;
         this.tenSP = TenSP;

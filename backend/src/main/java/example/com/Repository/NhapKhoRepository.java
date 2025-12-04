@@ -19,7 +19,7 @@ public interface NhapKhoRepository extends JpaRepository<NhapKho, String> {
     List<NhapKho> findByNgayNhap(LocalDateTime ngayNhap);
 
     // tìm theo mã phiếu nhập
-    NhapKho findByMaPhieuNhap(String maPhieuNhap);
+    NhapKho findByMaNK(String maPhieuNhap);
 
     //tìm theo mã nhập or tên nhà cung cấp
     @Query("SELECT nk FROM NhapKho nk WHERE nk.maNK = :keyword OR LOWER(nk.nhaCungCap) LIKE LOWER(CONCAT('%', :keyword, '%'))")

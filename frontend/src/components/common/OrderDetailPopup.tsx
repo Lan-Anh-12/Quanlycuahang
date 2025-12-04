@@ -12,14 +12,14 @@ interface Props {
 export default function OrderDetailPopup({ data, onClose }: Props) {
   if (!data) return null;
 
-  const { detail } = data;
+  const { record, detail } = data;
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-xl shadow-lg w-[520px] max-h-[85vh] overflow-y-auto">
         {/* TITLE */}
-        <h4 className="text-lg font-semibold mb-2 text-[#537B24]">
-          Danh sách sản phẩm
+        <h4 className="text-lg font-semibold mb-4 text-[#537B24]">
+          Danh sách sản phẩm - Đơn hàng #{record.maDH}
         </h4>
 
         {/* DETAIL TABLE */}
@@ -30,25 +30,26 @@ export default function OrderDetailPopup({ data, onClose }: Props) {
                 <th className="p-2">Mã SP</th>
                 <th className="p-2">Số lượng</th>
                 <th className="p-2">Đơn giá</th>
+                <th className="p-2">Thành tiền</th>
               </tr>
             </thead>
-
             <tbody>
-              {detail.length === 0 && (
+              {detail.length === 0 ? (
                 <tr>
-                  <td colSpan={3} className="p-3 text-center text-gray-500">
+                  <td colSpan={4} className="p-3 text-center text-gray-500">
                     Không có dữ liệu
                   </td>
                 </tr>
+              ) : (
+                detail.map((d) => (
+                  <tr key={d.maCTDH} className="border-b">
+                    <td className="p-2">{d.maSP}</td>
+                    <td className="p-2">{d.soLuong}</td>
+                    <td className="p-2">{d.donGia.toLocaleString("vi-VN")} ₫</td>
+                    <td className="p-2">{d.thanhTien.toLocaleString("vi-VN")} ₫</td>
+                  </tr>
+                ))
               )}
-
-              {detail.map((d) => (
-                <tr key={d.MaCTDH} className="border-b">
-                  <td className="p-2">{d.MaSP}</td>
-                  <td className="p-2">{d.SoLuong}</td>
-                  <td className="p-2">{d.DonGia.toLocaleString("vi-VN")} ₫</td>
-                </tr>
-              ))}
             </tbody>
           </table>
         </div>

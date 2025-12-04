@@ -1,4 +1,4 @@
-package example.com.Controller.quanly;
+package example.com.Controller;
 
 import example.com.Dto.donhang.DonHangRequest;
 import example.com.Dto.donhang.DonHangResponse;
@@ -29,7 +29,6 @@ public class QuanLyDonHangController {
 
     // Lấy đơn hàng theo khách hàng
     @GetMapping("/khachhang/{maKH}")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<DonHangResponse>> layDonHangTheoKhachHang(@PathVariable String maKH) {
         List<DonHangResponse> donHangs = donHangService.LayDonHangTheoKhachHang(maKH);
         if (donHangs.isEmpty()) return ResponseEntity.noContent().build();
@@ -38,7 +37,6 @@ public class QuanLyDonHangController {
 
     // Lấy đơn hàng theo nhân viên lập
     @GetMapping("/nhanvien/{maNV}")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<DonHangResponse>> layDonHangNhanVien(@PathVariable String maNV) {
         List<DonHangResponse> donHangs = donHangService.XemDonHangNVLap(maNV);
         if (donHangs.isEmpty()) return ResponseEntity.noContent().build();
@@ -47,7 +45,6 @@ public class QuanLyDonHangController {
 
     // Lấy chi tiết đơn hàng theo mã đơn
     @GetMapping("/chitiet/{maDH}")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<ChiTietDonHangResponse>> layChiTietDonHang(@PathVariable String maDH) {
         List<ChiTietDonHangResponse> chiTiets = donHangService.LayChiTietDonHangTheoDonHang(maDH);
         if (chiTiets.isEmpty()) return ResponseEntity.noContent().build();
@@ -56,7 +53,6 @@ public class QuanLyDonHangController {
 
     // Lấy đơn hàng theo khoảng ngày
     @GetMapping("/khoangngay")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<DonHangResponse>> layDonHangTheoKhoangNgay(
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
@@ -68,10 +64,41 @@ public class QuanLyDonHangController {
 
     // Cập nhật đơn hàng
     @PutMapping("/capnhat")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<DonHangResponse> capNhatDonHang(@RequestBody CapNhatDonHangRequest req) {
         DonHangResponse updated = donHangService.CapNhatDonHang(req);
         if (updated == null) return ResponseEntity.notFound().build();
         return ResponseEntity.ok(updated);
+    }
+
+    // lấy tất cả đơn hàng
+    @GetMapping("/tatca")
+    public ResponseEntity<List<DonHangResponse>> layTatCaDonHang() {
+        List<DonHangResponse> list = donHangService.layHetDonHang();
+        return ResponseEntity.ok(list);
+    }
+
+    // tìm kiếm đơn hàng theo từ khóa
+    @GetMapping("/tim")
+    public ResponseEntity<List<DonHangResponse>> timTheoTuKhoa(
+            @RequestParam String keyword) {
+        List<DonHangResponse> list = donHangService.searchDonHang(keyword);
+        return ResponseEntity.ok(list);
+    }
+
+    // Tạo đơn hàng
+    @PostMapping("/taomoi")
+    public ResponseEntity<DonHangResponse> taoDonHang(@RequestBody DonHangRequest req) {
+        DonHangResponse response = donHangService.TaoDonHang(req);
+        return ResponseEntity.ok(response);
+    }
+
+   
+
+    // Lấy đơn hàng theo khách hàng
+    @GetMapping("/khachhang")
+    public ResponseEntity<List<DonHangResponse>> layDonHangKhachHang(@RequestParam String maKH) {
+        List<DonHangResponse> list = donHangService.LayDonHangTheoKhachHang(maKH);
+        if(list.isEmpty()) return ResponseEntity.noContent().build();
+        return ResponseEntity.ok(list);
     }
 }

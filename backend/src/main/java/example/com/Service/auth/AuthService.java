@@ -5,7 +5,7 @@ public interface AuthService {
     String refeshToken(String refeshToken);
     void DangXuat(String token);
     void doiMatKhau(String maTK, String mkCu, String mkMoi);
-    String getMaTKByUsername(String username);
+    
 
 }
     

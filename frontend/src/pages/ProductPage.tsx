@@ -1,128 +1,178 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getProducts, deleteProduct } from "../services/productService";
+import api from "../services/api";
 import AddProductPopup from "../components/common/AddProductPopup";
 
-// ===== Định nghĩa interface Product =====
 interface Product {
-  id: number;
+  id: string; // chắc chắn là string
   name: string;
-  price: number;
-  image: string;
-  // thêm các trường khác nếu cần
+  price?: number;
+  image?: string;
+  xuatXu?: string;
+  moTaNgan?: string;
+  huongDan?: string;
+  phanLoai?: string;
 }
 
 export default function ProductPage() {
   const navigate = useNavigate();
 
-  // Khai báo state với kiểu rõ ràng
   const [products, setProducts] = useState<Product[]>([]);
-  const [page, setPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const [showPopup, setShowPopup] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Product | null>(null);
 
   const fetchData = async () => {
+    setLoading(true);
     try {
-      const res = await getProducts(page, 12, search, sort);
-      setProducts(res.items); // res.items phải có kiểu Product[]
-      setTotalPages(res.totalPages);
+      let list: Product[] = [];
+      const baseURL = "http://localhost:8080/quanly/khohang";
+
+      if (search.trim() !== "") {
+        const res = await api.get(`${baseURL}/sanpham/timkiem`, {
+          params: { phanLoai: search },
+        });
+        list = (res.data || []).map((p: any) => ({
+          id: p.maSP, // đảm bảo string
+          name: p.tenSP,
+          price: p.donGia ? Number(p.donGia) : 0,
+          image: p.url ?? "/placeholder.png",
+          xuatXu: p.xuatXu ?? "",
+          moTaNgan: p.moTaNgan ?? p.moTa ?? "",
+          huongDan: p.huongDan ?? "",
+          phanLoai: p.phanLoai ?? "",
+        }));
+      } else {
+        const res = await api.get(`${baseURL}/sanpham/conban`);
+        list = (res.data || []).map((p: any) => ({
+          id: p.maSP,
+          name: p.tenSP,
+          price: p.donGia ? Number(p.donGia) : 0,
+          image: p.url ?? "/placeholder.png",
+          xuatXu: p.xuatXu ?? "",
+          moTaNgan: p.moTaNgan ?? p.moTa ?? "",
+          huongDan: p.huongDan ?? "",
+          phanLoai: p.phanLoai ?? "",
+        }));
+      }
+
+      if (sort === "priceAsc") list.sort((a, b) => (a.price ?? 0) - (b.price ?? 0));
+      if (sort === "priceDesc") list.sort((a, b) => (b.price ?? 0) - (a.price ?? 0));
+
+      setProducts(list);
     } catch (err) {
-      console.log(err);
+      console.error("Lỗi fetch sản phẩm:", err);
+      setProducts([]);
     }
+    setLoading(false);
   };
 
   useEffect(() => {
     fetchData();
-  }, [page, sort, search]);
-
-  const handleSearch = () => {
-    setPage(1);
-    fetchData();
-  };
+  }, [search, sort]);
 
   const handleDelete = async () => {
     if (!deleteTarget) return;
+
     try {
-      await deleteProduct(deleteTarget.id);
+      await api.delete(
+        `http://localhost:8080/quanly/khohang/suasp/${deleteTarget.id}`
+      );
       setDeleteTarget(null);
-      fetchData(); // load lại danh sách sau khi xoá
-    } catch (error) {
-      console.log("Lỗi xóa:", error);
+      fetchData();
+    } catch (err) {
+      console.error("Lỗi xóa sản phẩm:", err);
     }
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
-      {/* === TOP BAR === */}
-      <div className="flex justify-between items-center mb-6">
-        {/* LEFT: search + sort */}
-        <div className="flex items-center gap-2">
+    <div style={{ maxWidth: 1200, margin: "0 auto", padding: "20px" }}>
+      {/* Top bar */}
+      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 20 }}>
+        <div style={{ display: "flex", gap: 10 }}>
           <input
             type="text"
-            placeholder="Tìm sản phẩm..."
-            className="border rounded px-3 py-2 w-64"
+            placeholder="Tìm sản phẩm theo phân loại..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
+            style={{ padding: "8px", width: 250 }}
           />
-
-          <button
-            onClick={handleSearch}
-            className="bg-[#537B24] text-white px-4 py-2 rounded hover:bg-[#44651d]"
-          >
-            Tìm kiếm
-          </button>
-
-          <select
-            className="border px-3 py-2 rounded"
-            value={sort}
-            onChange={(e) => setSort(e.target.value)}
-          >
+          <select value={sort} onChange={(e) => setSort(e.target.value)} style={{ padding: "8px" }}>
             <option value="">Sắp xếp</option>
             <option value="priceAsc">Giá tăng dần</option>
             <option value="priceDesc">Giá giảm dần</option>
           </select>
         </div>
 
-        {/* RIGHT: ADD BUTTON */}
         <button
           onClick={() => setShowPopup(true)}
-          className="bg-[#537B24] text-white px-4 py-2 rounded hover:bg-[#44651d]"
+          style={{
+            backgroundColor: "#537B24",
+            color: "#fff",
+            border: "none",
+            padding: "8px 16px",
+            cursor: "pointer",
+          }}
         >
           + Thêm mới
         </button>
       </div>
 
-      {/* === PRODUCT LIST === */}
-      <div className="grid grid-cols-4 gap-6">
+      {loading && <p style={{ textAlign: "center" }}>Đang tải sản phẩm...</p>}
+      {!loading && products.length === 0 && <p style={{ textAlign: "center" }}>Không có sản phẩm nào.</p>}
+
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+          gap: 20,
+        }}
+      >
         {products.map((p) => (
-          <div key={p.id} className="bg-white rounded-xl shadow p-3">
+          <div
+            key={p.id}
+            style={{
+              border: "1px solid #ccc",
+              borderRadius: 8,
+              padding: 10,
+              textAlign: "center",
+            }}
+          >
             <img
               src={p.image}
               alt={p.name}
-              className="h-44 w-full object-cover rounded"
+              style={{ width: "100%", height: 160, objectFit: "cover", borderRadius: 4 }}
             />
-
-            <h3 className="font-semibold mt-3">{p.name}</h3>
-            <p className="text-[#537B24] font-bold mt-1">
-              {p.price.toLocaleString()} đ
+            <h3 style={{ margin: "10px 0" }}>{p.name}</h3>
+            <p style={{ color: "#537B24", fontWeight: "bold" }}>
+              {(p.price ?? 0).toLocaleString("vi-VN")} đ
             </p>
-
-            {/* Nút xem + nút xoá */}
-            <div className="flex gap-2 mt-3">
+            <div style={{ display: "flex", gap: 5, marginTop: 10 }}>
               <button
-                className="flex-1 bg-[#537B24] text-white py-2 rounded hover:bg-[#44651d]"
+                style={{
+                  flex: 1,
+                  backgroundColor: "#537B24",
+                  color: "#fff",
+                  border: "none",
+                  padding: 6,
+                  cursor: "pointer",
+                }}
                 onClick={() => navigate(`/products/${p.id}`)}
               >
                 Xem
               </button>
-
               <button
-                className="flex-1 bg-red-500 text-white py-2 rounded hover:bg-red-600"
+                style={{
+                  flex: 1,
+                  backgroundColor: "red",
+                  color: "#fff",
+                  border: "none",
+                  padding: 6,
+                  cursor: "pointer",
+                }}
                 onClick={() => setDeleteTarget(p)}
               >
                 Xoá
@@ -132,68 +182,44 @@ export default function ProductPage() {
         ))}
       </div>
 
-      {/* === PAGINATION === */}
-      <div className="flex justify-center items-center gap-3 mt-6">
-        <button
-          disabled={page === 1}
-          onClick={() => setPage(page - 1)}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-40"
-        >
-          Prev
-        </button>
-
-        <span>
-          Trang <b>{page}</b> / {totalPages}
-        </span>
-
-        <button
-          disabled={page === totalPages}
-          onClick={() => setPage(page + 1)}
-          className="px-3 py-1 bg-gray-200 rounded disabled:opacity-40"
-        >
-          Next
-        </button>
-      </div>
-
-      {/* === POPUP ADD NEW === */}
       {showPopup && (
         <AddProductPopup
           onClose={() => setShowPopup(false)}
           onSuccess={() => {
-            fetchData(); // reload danh sách sau khi thêm mới
+            fetchData();
             setShowPopup(false);
           }}
         />
       )}
 
-      {/* === POPUP DELETE === */}
       {deleteTarget && (
-        <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl shadow-lg w-96 relative">
-            {/* nút đóng */}
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            backgroundColor: "rgba(0,0,0,0.4)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div style={{ backgroundColor: "#fff", padding: 20, borderRadius: 8, width: 400, position: "relative" }}>
             <button
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
               onClick={() => setDeleteTarget(null)}
+              style={{ position: "absolute", top: 10, right: 10, cursor: "pointer" }}
             >
               ✖
             </button>
-
-            <h2 className="text-lg font-semibold">
-              Bạn chắc chắn muốn xoá{" "}
-              <span className="text-red-600">{deleteTarget.name}</span>?
+            <h2>
+              Xóa sản phẩm <span style={{ color: "red" }}>{deleteTarget.name}</span>?
             </h2>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button
-                className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400"
-                onClick={() => setDeleteTarget(null)}
-              >
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: 10, marginTop: 20 }}>
+              <button onClick={() => setDeleteTarget(null)} style={{ padding: 6, cursor: "pointer" }}>
                 Huỷ
               </button>
-
               <button
-                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600"
                 onClick={handleDelete}
+                style={{ padding: 6, backgroundColor: "red", color: "#fff", cursor: "pointer" }}
               >
                 Xác nhận
               </button>

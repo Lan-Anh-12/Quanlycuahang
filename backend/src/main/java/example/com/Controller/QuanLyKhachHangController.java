@@ -1,4 +1,4 @@
-package example.com.Controller.quanly;
+package example.com.Controller;
 
 import example.com.model.KhachHang;
 import example.com.Dto.khachhang.KhachHangRequest;
@@ -23,7 +23,6 @@ public class QuanLyKhachHangController {
 
     // tạo khách hàng
     @PostMapping("/tao")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<KhachHangResponse> taoKhach(
             @RequestBody KhachHangRequest request) {
 
@@ -32,7 +31,6 @@ public class QuanLyKhachHangController {
     }
     // cập nhật khách hàng
     @PutMapping("/capnhat/{maKH}")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<KhachHangResponse> capNhatKhach(
             @PathVariable String maKH,
             @RequestBody KhachHangRequest request) {
@@ -43,7 +41,6 @@ public class QuanLyKhachHangController {
 
     // lấy tất cả khách hàng
     @GetMapping("/tatca")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<KhachHangResponse>> layTatCaKhach() {
         List<KhachHangResponse> list = khachHangService.layTatCaKhachHang();
         return ResponseEntity.ok(list);
@@ -51,12 +48,18 @@ public class QuanLyKhachHangController {
 
     //tìm theo tên hoặc sđt
     @GetMapping("/tim")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<KhachHangResponse>> timTheoTenHoacSDT(
             @RequestParam String ten) {
         List<KhachHangResponse> list = khachHangService.searchKhachHang(ten);
         return ResponseEntity.ok(list);
     }
+     // Lấy khách hàng theo mã
+     @GetMapping("/{maKH}")
+    public ResponseEntity<KhachHangResponse> layTheoMa(@PathVariable String maKH) {
+        return ResponseEntity.ok(khachHangService.layKhachHangTheoMa(maKH));
+    }
+
+
 
    
 }

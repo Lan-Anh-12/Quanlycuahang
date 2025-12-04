@@ -1,112 +1,103 @@
 import { useState } from "react";
-// ---- Định nghĩa kiểu sản phẩm ----
-export interface Product {
-  maSP: string;
-  tenSP: string;
-  anh: string;
-  xuatXu: string;
-  moTaNgan: string;
-  huongDan: string;
-  phanLoai: string;
-}
+import { IoClose } from "react-icons/io5";
+import { updateProduct, type Product,type ProductRequest } from "../../services/productService";
 
-// ---- Props ----
-interface EditPopupProps {
+interface EditProductPopupProps {
   product: Product;
   onClose: () => void;
-  onSave: (updated: Product) => void; // callback khi lưu
+  onSave: (updated: Product) => void;
 }
 
-export default function EditProductPopup({
-  product,
-  onClose,
-  onSave,
-}: EditPopupProps) {
-  const [form, setForm] = useState<Product>(product);
+export default function EditProductPopup({ product, onClose, onSave }: EditProductPopupProps) {
+  const [form, setForm] = useState<ProductRequest>({
+    tenSP: product.tenSP,
+    phanLoai: product.phanLoai,
+    giaBan: product.giaBan,
+    moTa: product.moTa,
+    soLuong: product.soLuongTon,
+    url: product.url,
+  });
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm(prev => ({
+      ...prev,
+      [name]: name === "giaBan" || name === "soLuong" ? Number(value) : value,
+    }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      const updated = await updateProduct(product.maSP, form);
+      onSave(updated);
+      onClose();
+    } catch (err: any) {
+      console.error("Cập nhật sản phẩm lỗi:", err);
+      alert(err.response?.data?.message || "Không thể cập nhật sản phẩm!");
+    }
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-40 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-[450px] shadow-xl animate-fadeIn relative">
-        {/* Nút đóng (X) */}
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+      <div className="bg-white p-6 rounded-xl shadow-lg w-full max-w-md relative">
         <button
+          className="absolute top-3 right-3 text-2xl text-gray-500 hover:text-red-500"
           onClick={onClose}
-          className="absolute right-3 top-3 text-xl font-bold text-gray-600 hover:text-black"
         >
-          ×
+          <IoClose />
         </button>
+        <h2 className="text-xl font-bold mb-4 text-center text-gray-800">Sửa sản phẩm</h2>
 
-        <h2 className="text-2xl font-semibold text-center mb-5">
-          Sửa sản phẩm
-        </h2>
-
-        <div className="space-y-3">
-          <input
-            name="maSP"
-            value={form.maSP}
-            onChange={handleChange}
-            placeholder="Mã sản phẩm"
-            className="w-full p-2 border rounded"
-          />
-
+        <div className="flex flex-col gap-3">
           <input
             name="tenSP"
+            placeholder="Tên sản phẩm"
             value={form.tenSP}
             onChange={handleChange}
-            placeholder="Tên sản phẩm"
-            className="w-full p-2 border rounded"
+            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-
-          <input
-            name="anh"
-            value={form.anh}
-            onChange={handleChange}
-            placeholder="Link ảnh (URL)"
-            className="w-full p-2 border rounded"
-          />
-
-          <input
-            name="xuatXu"
-            value={form.xuatXu}
-            onChange={handleChange}
-            placeholder="Xuất xứ"
-            className="w-full p-2 border rounded"
-          />
-
-          <input
-            name="moTaNgan"
-            value={form.moTaNgan}
-            onChange={handleChange}
-            placeholder="Mô tả ngắn"
-            className="w-full p-2 border rounded"
-          />
-
-          <textarea
-            name="huongDan"
-            value={form.huongDan}
-            onChange={handleChange}
-            placeholder="Hướng dẫn sử dụng"
-            className="w-full p-2 border rounded"
-          />
-
           <input
             name="phanLoai"
+            placeholder="Phân loại"
             value={form.phanLoai}
             onChange={handleChange}
-            placeholder="Phân loại"
-            className="w-full p-2 border rounded"
+            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            name="giaBan"
+            type="number"
+            placeholder="Giá bán"
+            value={form.giaBan}
+            onChange={handleChange}
+            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            name="soLuong"
+            type="number"
+            placeholder="Số lượng tồn"
+            value={form.soLuong}
+            onChange={handleChange}
+            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <textarea
+            name="moTa"
+            placeholder="Mô tả"
+            value={form.moTa}
+            onChange={handleChange}
+            className="border border-gray-300 rounded p-2 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+          <input
+            name="url"
+            placeholder="URL ảnh"
+            value={form.url}
+            onChange={handleChange}
+            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
 
         <button
-          onClick={() => onSave(form)}
-          className="w-full bg-[#537B24] text-white py-2 mt-4 rounded hover:bg-[#44651d]"
+          onClick={handleSubmit}
+          className="mt-5 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors"
         >
           Lưu thay đổi
         </button>

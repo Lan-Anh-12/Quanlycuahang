@@ -1,9 +1,8 @@
-package example.com.Controller.quanly;
+package example.com.Controller;
 
 import example.com.Service.staff.NhanVienService;
 import example.com.Dto.nhanvien.NhanVienResponse;
 import example.com.Dto.nhanvien.NhanVienWithTaiKhoanRequest;
-import example.com.Dto.nhanvien.NhanVienRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,21 +20,18 @@ public class QuanLyNhanVienController {
 
     // Lấy tất cả nhân viên
     @GetMapping("/tatca")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<NhanVienResponse>> layTatCaNhanVien() {
         List<NhanVienResponse> list = nhanVienService.layTatCa();
         return ResponseEntity.ok(list);
     }
     // tìm theo tên nhân viên
     @GetMapping("/timkiem")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<List<NhanVienResponse>> timTheoTen(@RequestParam String tenNV) {
         List<NhanVienResponse> list = nhanVienService.timTheoTen(tenNV);
         return ResponseEntity.ok(list);
     }
     // Thêm nhân viên (kèm tài khoản)
     @PostMapping("/taomoi")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<NhanVienResponse> taoNhanVien(@RequestBody NhanVienWithTaiKhoanRequest nvRequest) {
         NhanVienResponse nvResponse = nhanVienService.taoNhanVien(nvRequest);
         return ResponseEntity.ok(nvResponse);
@@ -43,7 +39,6 @@ public class QuanLyNhanVienController {
 
     // xóa nhân viên (đổi trạng thái)
     @DeleteMapping("/xoa/{maNV}")
-    @PreAuthorize("hasAnyRole('QuanLy')")
     public ResponseEntity<Void> xoaNhanVien(@PathVariable String maNV) {
         nhanVienService.xoaNhanVien(maNV);
         return ResponseEntity.ok().build();

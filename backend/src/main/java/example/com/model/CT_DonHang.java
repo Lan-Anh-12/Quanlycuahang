@@ -3,7 +3,7 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import example.com.model.khoachinh.CTDHIdGenerator;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -32,13 +32,6 @@ public class CT_DonHang {
 
     public CT_DonHang() {}
 
-    @PrePersist
-    public void generateMaCTDH() {
-        if (this.maCTDH == null || this.maCTDH.isEmpty()) {
-            // Gọi service hoặc logic tạo mã
-            this.maCTDH = CTDHIdGenerator.generateNextId();
-        }
-    }
 
     public CT_DonHang(String MaCTDH, String MaDH, String MaSP, int SoLuong, BigDecimal DonGia, BigDecimal ThanhTien) {
         this.maCTDH = MaCTDH;

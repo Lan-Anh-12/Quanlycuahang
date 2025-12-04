@@ -4,7 +4,7 @@ import java.math.BigDecimal;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import example.com.model.khoachinh.CTNKIdGenerator;
+
 import jakarta.persistence.*;
 
 @Entity
@@ -33,12 +33,7 @@ public class CT_NhapKho {
 
     public CT_NhapKho() {}
 
-    @PrePersist
-    public void generateMaCTNK() {
-        if (this.maCTNK == null || this.maCTNK.isEmpty()) {
-            this.maCTNK = CTNKIdGenerator.generateNextId();
-        }
-    }
+   
 
     public CT_NhapKho(String MaCTNK, String MaNK, String MaSP, int SoLuong, BigDecimal DonGia, BigDecimal ThanhTien) {
         this.maCTNK = MaCTNK;

@@ -1,45 +1,33 @@
-import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/customers";
+import api from "./api";
 
-// ==== DEFINE MODEL ====
 export interface Customer {
-  id: number;
-  maKH: string;
-  hoTen: string;
+  maKH: string;      // Mã khách hàng, dùng làm path param
+  tenKH: string;     // dùng FE state, sẽ map sang tenKH khi gửi
   namSinh: number;
   diaChi: string;
   sdt: string;
 }
 
-// ==== API CALL ====
+const API_URL = "http://localhost:8080/quanly/khachhang";
 
 // Lấy tất cả khách hàng
-export const getCustomers = async () => {
-  const res = await axios.get(API_URL);
+export const getCustomers = async (): Promise<Customer[]> => {
+  const res = await api.get(`${API_URL}/tatca`);
   return res.data;
 };
 
-// Lấy khách hàng theo ID
-export const getCustomerById = async (id: number | string) => {
-  const res = await axios.get(`${API_URL}/${id}`);
+// Tìm khách hàng theo tên hoặc SĐT
+export const searchCustomers = async (tenKH: string): Promise<Customer[]> => {
+  const res = await api.get(`${API_URL}/tim`, { params: { tenKH } });
   return res.data;
 };
 
-// Tạo mới
-export const createCustomer = async (customer: any) => {
-  const res = await axios.post(API_URL, customer);
-  return res.data;
-};
-
-// Cập nhật
-export const updateCustomer = async (id: number | string, customer: any) => {
-  const res = await axios.put(`${API_URL}/${id}`, customer);
-  return res.data;
-};
-
-// Xóa
-export const deleteCustomer = async (id: number | string) => {
-  const res = await axios.delete(`${API_URL}/${id}`);
+// Cập nhật khách hàng
+export const updateCustomer = async (
+  maKH: string,
+  data: { tenKH: string; namSinh: number; diaChi: string; sdt: string }
+): Promise<Customer> => {
+  const res = await api.put(`${API_URL}/capnhat/${maKH}`, data);
   return res.data;
 };

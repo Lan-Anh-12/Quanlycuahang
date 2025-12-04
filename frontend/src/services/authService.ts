@@ -1,31 +1,37 @@
+// src/services/authService.ts
 import axios from "axios";
 
-const API_URL = "http://localhost:8080/api/auth";
+const API_URL = "http://localhost:8080/api/auth"; // backend của bạn
 
 export const authService = {
-  // đăng nhập
-  login: async (
-    email: string,
-    password: string
-  ): Promise<{
-    user: { id: number; name: string; email: string; role: string };
-    token: string;
-  }> => {
-    const res = await axios.post(`${API_URL}/login`, { email, password });
-    return res.data;
+  login: async (username: string, password: string) => {
+    try {
+      const response = await axios.post(
+        `${API_URL}/login`,
+        { username, matkhau: password }, // trùng với field backend
+        { withCredentials: true }        // quan trọng để gửi cookie
+      );
+      return response.data; // có thể là token hoặc thông tin user
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
   },
 
-  // đổi mật khẩu
-  changePassword: async (
-    email: string,
-    oldPassword: string,
-    newPassword: string
-  ): Promise<{ message: string }> => {
-    const res = await axios.post(`${API_URL}/change-password`, {
-      email,
-      oldPassword,
-      newPassword,
-    });
-    return res.data;
+  logout: async () => {
+    try {
+      await axios.post(`${API_URL}/logout`, {}, { withCredentials: true });
+    } catch (error: any) {
+      console.error(error.response?.data || error);
+    }
   },
+
+  // nếu có refresh token
+  refreshToken: async () => {
+    try {
+      const response = await axios.post(`${API_URL}/refresh-token`, {}, { withCredentials: true });
+      return response.data;
+    } catch (error: any) {
+      throw error.response?.data || error;
+    }
+  }
 };

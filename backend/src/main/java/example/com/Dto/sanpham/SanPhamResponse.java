@@ -12,5 +12,9 @@ public class SanPhamResponse {
     private String moTa;
     private BigDecimal giaBan;
     private String phanLoai;
-    private String urlAnh;
+    private String url;
+    
+    public Integer getTonKho() {
+        return soLuongTon;
+    }
 }

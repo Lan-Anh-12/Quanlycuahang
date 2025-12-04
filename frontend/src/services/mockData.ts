@@ -1,8 +1,8 @@
 // mockData.ts
 
 // --- 1. Dữ liệu KPIs Tổng quan ---
-export const totalEmployees = 45;
-export const totalCustomers = 1250;
+export const totalEmployees = 4;
+export const totalCustomers = 40;
 
 // --- 2. Dữ liệu Doanh thu Cả tuần (Biểu đồ Cột) ---
 export interface WeeklyRevenueItem {

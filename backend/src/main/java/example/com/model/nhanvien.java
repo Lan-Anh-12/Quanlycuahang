@@ -3,7 +3,6 @@ package example.com.model;
 import jakarta.persistence.*;
 import java.time.LocalDate;
 
-import example.com.model.khoachinh.NhanVienIdGenerator;
 
 @Entity
 @Table(name = "nhanvien")
@@ -32,13 +31,7 @@ public class NhanVien {
 
     public NhanVien() {}  
     
-    @PrePersist
-    public void generateMaNV() {
-        if (this.maNV == null || this.maNV.isEmpty()) {
-            this.maNV = NhanVienIdGenerator.generateNextId();
-        }
-    }
-
+    
     public NhanVien(String MaNV, String TenNV, String SDT, String Email, LocalDate NgayVaoLam, String MaTK, String trangThai) {
         this.maNV = MaNV;
         this.tenNV = TenNV;

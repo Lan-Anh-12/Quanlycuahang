@@ -26,24 +26,23 @@ public interface ChiTietDonHangRepository extends JpaRepository<CT_DonHang, Stri
 
     // native — sản phẩm khách hàng mua
     @Query(value = "SELECT sp.tensp " +
-            "FROM ct_donhang ct " +
-            "JOIN donhang dh ON dh.MaDH = ct.MaDH " +
-            "JOIN sanpham sp ON sp.MaSP = ct.MaSP " +
+            "FROM CT_DonHang ct " +
+            "JOIN DonHang dh ON dh.MaDH = ct.MaDH " +
+            "JOIN SanPham sp ON sp.MaSP = ct.MaSP " +
             "WHERE dh.MaKH = :maKH",
             nativeQuery = true)
     List<String> dsSanPhamDaMuaNative(@Param("maKH") String maKH);
 
 
     // JPQL — sản phẩm bán chạy theo tháng
-    @Query("""
-        SELECT ct.sanPham.maSP AS maSP, SUM(ct.soLuong) AS tongSL
-        FROM CT_DonHang ct
-        JOIN ct.donHang dh
-        WHERE MONTH(dh.ngayLap) = :thang
-        AND YEAR(dh.ngayLap) = :nam
-        GROUP BY ct.sanPham.maSP
-        ORDER BY tongSL DESC
-    """)
-    List<Object[]> sanPhamBanChayTheoThang(@Param("thang") int thang,
-                                           @Param("nam") int nam);
+   @Query("SELECT ct.maSP AS maSP, SUM(ct.soLuong) AS tongSL " +
+       "FROM CT_DonHang ct " +
+       "JOIN ct.donHang dh " +
+       "WHERE FUNCTION('MONTH', dh.ngayLap) = :thang " +
+       "AND FUNCTION('YEAR', dh.ngayLap) = :nam " +
+       "GROUP BY ct.maSP " +
+       "ORDER BY tongSL DESC")
+    List<Object[]> sanPhamBanChayTheoThang(@Param("thang") int thang, @Param("nam") int nam);
+
+
 }

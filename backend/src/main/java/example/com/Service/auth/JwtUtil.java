@@ -12,14 +12,14 @@ import java.util.Map;
 @Component
 public class JwtUtil {
 
-    private final String SECRET_KEY = "rok_lananh_123456789012345678901234"; 
+    private final String SECRET_KEY = "rok_lananh_123456789012345678901234";
 
     private Key getSigningKey() {
         return Keys.hmacShaKeyFor(SECRET_KEY.getBytes());
     }
 
-    // Tạo JWT
     public String generateToken(String username, String role) {
+
         Map<String, Object> claims = new HashMap<>();
         claims.put("username", username);
         claims.put("role", role);
@@ -33,7 +33,6 @@ public class JwtUtil {
                 .compact();
     }
 
-    // Lấy Claims
     public Claims extractClaims(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(getSigningKey())
@@ -42,30 +41,20 @@ public class JwtUtil {
                 .getBody();
     }
 
-    // Lấy username
     public String extractUsername(String token) {
         return extractClaims(token).get("username", String.class);
     }
 
-    // Lấy role
     public String extractRole(String token) {
         return extractClaims(token).get("role", String.class);
     }
 
-    // Kiểm tra token hợp lệ
     public boolean validateToken(String token) {
         try {
-            extractClaims(token); // chỉ cần parse thành công là OK
+            extractClaims(token);
             return true;
-        } catch (ExpiredJwtException e) {
-            System.out.println("Token hết hạn");
-        } catch (MalformedJwtException e) {
-            System.out.println("Token sai định dạng");
-        } catch (io.jsonwebtoken.security.SignatureException e) {
-            System.out.println("Sai chữ ký token");
         } catch (Exception e) {
-            System.out.println("Token không hợp lệ");
+            return false;
         }
-        return false;
     }
 }

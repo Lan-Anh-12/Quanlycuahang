@@ -7,7 +7,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import example.com.model.khoachinh.DonHangIdGenerator;
+
 
 
 @Entity
@@ -41,12 +41,7 @@ public class DonHang {
 
     public DonHang() {}
     
-    @PrePersist
-    public void generateMaDH() {
-        if (this.maDH == null || this.maDH.isEmpty()) {
-            this.maDH = DonHangIdGenerator.generateNextId();
-        }
-    }
+   
 
 
     public DonHang(String MaDH, String MaKH, String MaNV, LocalDateTime NgayLap, BigDecimal TongTien) {
