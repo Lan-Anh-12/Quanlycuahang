@@ -44,5 +44,7 @@ public interface ChiTietDonHangRepository extends JpaRepository<CT_DonHang, Stri
        "ORDER BY tongSL DESC")
     List<Object[]> sanPhamBanChayTheoThang(@Param("thang") int thang, @Param("nam") int nam);
 
-
+    // lấy mã ct dh lớn nhất
+    @Query(value = "SELECT MaCTDH FROM ct_donhang ORDER BY MaCTDH DESC LIMIT 1", nativeQuery = true)
+    String findLastMaCTDH();
 }

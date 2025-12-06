@@ -1,7 +1,7 @@
+// src/components/common/LoginPopup.tsx
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
 import { useAuth } from "../../context/AuthContext";
-import { authService } from "../../services/authService";
 
 interface Props {
   isOpen: boolean;
@@ -10,7 +10,7 @@ interface Props {
 
 export default function LoginPopup({ isOpen, onClose }: Props) {
   const { login } = useAuth();
-  const [usernameInput, setUsernameInput] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
@@ -19,18 +19,11 @@ export default function LoginPopup({ isOpen, onClose }: Props) {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
     try {
-      // Gọi API backend
-      const token = await authService.login(usernameInput, password);
-
-      // Cập nhật AuthContext với username thật
-      login({ username: usernameInput }, token);
-
-      // Đóng popup
+      await login(username, password);
       onClose();
     } catch (err: any) {
-      setError("Sai username hoặc mật khẩu");
+      setError(err.response?.data || "Sai username hoặc mật khẩu");
     }
   };
 
@@ -40,20 +33,17 @@ export default function LoginPopup({ isOpen, onClose }: Props) {
         <button onClick={onClose} className="absolute top-3 right-3">
           <IoClose size={26} />
         </button>
-
         <h2 className="text-2xl font-bold text-center text-[#537B24] mb-4">
           Đăng nhập
         </h2>
-
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
-
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <input
             type="text"
             placeholder="Username"
             className="border rounded px-3 py-2"
-            value={usernameInput}
-            onChange={(e) => setUsernameInput(e.target.value)}
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
             required
           />
           <input

@@ -4,11 +4,13 @@ import { IoClose, IoChevronDown } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { useAuth } from "../../context/AuthContext";
 import LoginPopup from "../common/LoginPopup";
+import ChangePasswordPopup from "../common/ChangePasswordPopup";
 
 export default function Header() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [loginOpen, setLoginOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [changePassOpen, setChangePassOpen] = useState(false);
 
   const { user, logout } = useAuth();
 
@@ -50,7 +52,15 @@ export default function Header() {
 
                   {menuOpen && (
                     <div className="absolute right-0 mt-2 w-40 bg-white shadow-lg rounded-lg border text-black z-50">
-                      {/* Logout */}
+                      <button
+                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                        onClick={() => {
+                          setChangePassOpen(true);
+                          setMenuOpen(false);
+                        }}
+                      >
+                        Đổi mật khẩu
+                      </button>
                       <button
                         className="w-full text-left px-4 py-2 hover:bg-gray-100 text-red-600"
                         onClick={() => {
@@ -60,13 +70,6 @@ export default function Header() {
                       >
                         Đăng xuất
                       </button>
-                      {/* TODO: Change Password */}
-                      {/* <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        onClick={() => { setChangePasswordOpen(true); setMenuOpen(false); }}
-                      >
-                        Đổi mật khẩu
-                      </button> */}
                     </div>
                   )}
                 </div>
@@ -110,7 +113,7 @@ export default function Header() {
             { label: "Sản Phẩm", link: "/sanpham" },
             { label: "Khách Hàng", link: "/khachhang" },
             { label: "Đơn hàng", link: "/donhang" },
-            { label: "Nhân Viên", link: "/nhanvien" },
+            { label: "Tạo Đơn Hàng", link: "/taodonhang" },
             { label: "Nhập Kho", link: "/nhapkho" },
           ].map((item, i) => (
             <Link
@@ -125,8 +128,12 @@ export default function Header() {
         </nav>
       </div>
 
-      {/* Login Popup */}
+      {/* Popups */}
       <LoginPopup isOpen={loginOpen} onClose={() => setLoginOpen(false)} />
+      <ChangePasswordPopup
+        isOpen={changePassOpen}
+        onClose={() => setChangePassOpen(false)}
+      />
     </header>
   );
 }

@@ -8,26 +8,28 @@ import example.com.Dto.sanpham.SanPhamRequest;
 import example.com.Dto.sanpham.SanPhamResponse;
 
 public interface InventoryService {
-    
-     // Nhập kho từ FE
+
+    // Nhập kho từ FE
     NhapKhoResponse nhapKho(NhapKhoRequest request);
 
     // Lấy danh sách phiếu nhập
     List<NhapKhoResponse> layTatCaPhieuNhap();
 
-    // Lấy 1 phiếu nhập
+    // // Lấy 1 phiếu nhập
     NhapKhoResponse layPhieuNhapTheoMa(String maNK);
 
-    // Xóa phiếu nhập + trừ tồn kho tương ứng
-    void xoaPhieuNhap(String maNK);
+    // Cập nhật phiếu nhập 
+    NhapKhoResponse capNhatPhieuNhap(String maNK, NhapKhoRequest request);
 
     // kiểm tra tồn kho sản phẩm
     int xemTonKho(String maSP);
+
     int kiemTraSoLuongSpTheoTen(String keyword);
 
     // Sản phẩm
     List<SanPhamResponse> sanPhamConBan();
-    List<SanPhamResponse> searchSanPham(String phanLoai); // tìm sp theo phân loại hoặc tên
+    
+    // Lấy URL hình ảnh theo mã sản phẩm
     String layUrlTheoMa(String maSp);
 
     // CRUD sản phẩm
@@ -42,5 +44,8 @@ public interface InventoryService {
 
     // lấy theo mã nhập hoặc nhà cung cấp
     List<NhapKhoResponse> layTheoMaNKOrNCC(String keyword);
+
+    // lấy sản phẩm theo tên
+    List<SanPhamResponse> timSanPhamTheoTen(String tenSP);
 
 }

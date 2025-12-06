@@ -1,14 +1,16 @@
+// src/components/common/ChangePasswordPopup.tsx
 import { useState } from "react";
 import { IoClose } from "react-icons/io5";
-import axios from "axios";
+import api from "../../services/api";
+import { useAuth } from "../../context/AuthContext";
 
 interface Props {
   isOpen: boolean;
   onClose: () => void;
-  email: string;
 }
 
-export default function ChangePasswordPopup({ isOpen, onClose, email }: Props) {
+export default function ChangePasswordPopup({ isOpen, onClose }: Props) {
+  const { user } = useAuth();
   const [oldPass, setOldPass] = useState("");
   const [newPass, setNewPass] = useState("");
   const [confirm, setConfirm] = useState("");
@@ -22,25 +24,31 @@ export default function ChangePasswordPopup({ isOpen, onClose, email }: Props) {
     setError("");
     setSuccess("");
 
+    if (!user?.maTK) {
+      setError("Không tìm thấy thông tin user");
+      return;
+    }
+
     if (newPass !== confirm) {
       setError("Mật khẩu xác nhận không khớp");
       return;
     }
 
     try {
-      const res = await axios.post(
-        "http://localhost:8080/api/auth/change-password",
+      await api.post(
+        "/api/auth/change-password",
         {
-          email,
-          oldPassword: oldPass,
-          newPassword: newPass,
-        }
+          maTK: user.maTK,
+          mkCu: oldPass,
+          mkMoi: newPass,
+        },
+        { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }
       );
 
-      setSuccess(res.data.message || "Đổi mật khẩu thành công");
+      setSuccess("Đổi mật khẩu thành công");
       setTimeout(() => onClose(), 1000);
     } catch (err: any) {
-      setError(err.response?.data?.message || "Không thể đổi mật khẩu");
+      setError(err.response?.data || "Không thể đổi mật khẩu");
     }
   };
 
@@ -50,14 +58,11 @@ export default function ChangePasswordPopup({ isOpen, onClose, email }: Props) {
         <button onClick={onClose} className="absolute top-3 right-3">
           <IoClose size={26} />
         </button>
-
         <h2 className="text-2xl font-bold text-center text-[#537B24] mb-4">
           Đổi mật khẩu
         </h2>
-
         {error && <p className="text-red-500 text-sm mb-3">{error}</p>}
         {success && <p className="text-green-600 text-sm mb-3">{success}</p>}
-
         <form onSubmit={handleChange} className="flex flex-col gap-4">
           <input
             type="password"
@@ -67,7 +72,6 @@ export default function ChangePasswordPopup({ isOpen, onClose, email }: Props) {
             onChange={(e) => setOldPass(e.target.value)}
             required
           />
-
           <input
             type="password"
             placeholder="Mật khẩu mới"
@@ -76,7 +80,6 @@ export default function ChangePasswordPopup({ isOpen, onClose, email }: Props) {
             onChange={(e) => setNewPass(e.target.value)}
             required
           />
-
           <input
             type="password"
             placeholder="Xác nhận mật khẩu"
@@ -85,7 +88,6 @@ export default function ChangePasswordPopup({ isOpen, onClose, email }: Props) {
             onChange={(e) => setConfirm(e.target.value)}
             required
           />
-
           <button
             type="submit"
             className="bg-[#537B24] text-white rounded py-2 hover:bg-[#44651d]"

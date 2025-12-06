@@ -8,21 +8,19 @@ interface AddProductPopupProps {
 }
 
 export default function AddProductPopup({ onClose, onSuccess }: AddProductPopupProps) {
-  const [form, setForm] = useState<ProductRequest>({
+  // giữ string để input rỗng được
+  const [form, setForm] = useState({
     tenSP: "",
     phanLoai: "",
-    giaBan: 0,
+    giaBan: "",
+    soLuong: "",
     moTa: "",
-    soLuong: 0,
     url: "",
   });
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
-    setForm(prev => ({
-      ...prev,
-      [name]: name === "giaBan" || name === "soLuong" ? Number(value) : value,
-    }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
   const handleSubmit = async () => {
@@ -31,8 +29,18 @@ export default function AddProductPopup({ onClose, onSuccess }: AddProductPopupP
       return;
     }
 
+    // payload type-safe
+    const payload: ProductRequest = {
+      tenSP: form.tenSP,
+      phanLoai: form.phanLoai,
+      giaBan: Number(form.giaBan),
+      soLuong: form.soLuong ? Number(form.soLuong) : 0,
+      moTa: form.moTa,
+      url: form.url,
+    };
+
     try {
-      const newProduct = await createProduct(form);
+      const newProduct = await createProduct(payload);
       onSuccess(newProduct);
       onClose();
     } catch (err: any) {
@@ -50,6 +58,7 @@ export default function AddProductPopup({ onClose, onSuccess }: AddProductPopupP
         >
           <IoClose />
         </button>
+
         <h2 className="text-xl font-bold mb-4 text-center text-gray-800">Thêm sản phẩm</h2>
 
         <div className="flex flex-col gap-3">
@@ -60,6 +69,7 @@ export default function AddProductPopup({ onClose, onSuccess }: AddProductPopupP
             onChange={handleChange}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+
           <input
             name="phanLoai"
             placeholder="Phân loại"
@@ -67,22 +77,33 @@ export default function AddProductPopup({ onClose, onSuccess }: AddProductPopupP
             onChange={handleChange}
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
-          <input
-            name="giaBan"
-            type="number"
-            placeholder="Giá bán"
-            value={form.giaBan}
-            onChange={handleChange}
-            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
-          <input
-            name="soLuong"
-            type="number"
-            placeholder="Số lượng tồn"
-            value={form.soLuong}
-            onChange={handleChange}
-            className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
-          />
+
+          {/* Giá bán với chữ đ */}
+          <div className="flex items-center gap-2 border border-gray-300 rounded p-2 focus-within:ring-2 focus-within:ring-blue-400">
+            <input
+              name="giaBan"
+              type="number"
+              placeholder="Giá bán"
+              value={form.giaBan}
+              onChange={handleChange}
+              className="flex-1 focus:outline-none"
+            />
+            <span className="text-gray-700 font-medium">đ</span>
+          </div>
+
+          {/* Số lượng tồn */}
+          <div className="flex items-center gap-2 border border-gray-300 rounded p-2 focus-within:ring-2 focus-within:ring-blue-400">
+            <input
+              name="soLuong"
+              type="number"
+              placeholder="Số lượng tồn"
+              value={form.soLuong}
+              onChange={handleChange}
+              className="flex-1 focus:outline-none"
+            />
+            <span className="text-gray-700 font-medium">cái</span>
+          </div>
+
           <textarea
             name="moTa"
             placeholder="Mô tả"
@@ -90,6 +111,7 @@ export default function AddProductPopup({ onClose, onSuccess }: AddProductPopupP
             onChange={handleChange}
             className="border border-gray-300 rounded p-2 h-24 resize-none focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+
           <input
             name="url"
             placeholder="URL ảnh"
@@ -98,6 +120,8 @@ export default function AddProductPopup({ onClose, onSuccess }: AddProductPopupP
             className="border border-gray-300 rounded p-2 focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
         </div>
+
+        <p className="text-sm text-gray-500 mt-2">Vui lòng điền đầy đủ thông tin trước khi thêm sản phẩm.</p>
 
         <button
           onClick={handleSubmit}

@@ -7,11 +7,12 @@ import example.com.Service.customer.KhachHangService;
 import example.com.Service.inventory.InventoryService;
 import example.com.Service.order.DonHangService;
 import example.com.Service.order.ThongKeService;
-import example.com.Dto.khachhang.KhachHangResponse;
+import example.com.Dto.Dashboard.*;
+import example.com.Dto.donhang.ChiTietDonHangResponse;
 import example.com.Dto.donhang.DonHangResponse;
-import example.com.Dto.sanpham.SanPhamResponse;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.DayOfWeek;
 import java.util.*;
@@ -34,54 +35,61 @@ public class DashboardController {
     @Autowired
     private ThongKeService thongKeService;
 
-    //  KPIs: tổng nhân viên + tổng khách hàng
+    // ========================
+    // 1. KPIs: tổng khách hàng
+    // ========================
     @GetMapping("/kpis")
-    public Map<String, Object> getKpis() {
-        int totalEmployees = 45; // Nếu có NhanVienService: layTatCaNhanVien().size()
-        int totalCustomers = khachHangService.layTatCaKhachHang().size();
-        Map<String,Object> map = new HashMap<>();
-        map.put("totalEmployees", totalEmployees);
-        map.put("totalCustomers", totalCustomers);
-        return map;
+    public long getDashboardKPI() {
+        long totalCustomers = khachHangService.demTongKhachHang();  
+        return totalCustomers;
     }
 
-    //  Top 5 khách hàng theo tổng tiền
+    // ========================
+    // 2. Top 5 khách hàng theo tổng chi tiêu
+    // ========================
     @GetMapping("/top-customers")
-    public List<Map<String,Object>> getTopCustomers() {
-        List<KhachHangResponse> allCustomers = khachHangService.layTatCaKhachHang();
+    public List<CustomerRankingDTO> getTopCustomers() {
+        List<CustomerRankingDTO> result = khachHangService.layTatCaKhachHang().stream()
+            .map(c -> {
+                BigDecimal totalSpent = donHangService.LayDonHangTheoKhachHang(c.getMaKH()).stream()
+                        .map(o -> o.getTongTien())
+                        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        List<Map<String,Object>> result = allCustomers.stream()
-                .map(c -> {
-                    List<DonHangResponse> orders = donHangService.LayDonHangTheoKhachHang(c.getMaKH());
-                    BigDecimal totalSpent = orders.stream()
-                                                 .map(DonHangResponse::getTongTien)
-                                                 .reduce(BigDecimal.ZERO, BigDecimal::add);
-                    Map<String,Object> map = new HashMap<>();
-                    map.put("name", c.getTenKH());
-                    map.put("total_spent", totalSpent);
-                    return map;
-                })
-                .sorted((a,b) -> ((BigDecimal)b.get("total_spent")).compareTo((BigDecimal)a.get("total_spent")))
-                .limit(5)
-                .collect(Collectors.toCollection(ArrayList::new));
+                CustomerRankingDTO dto = new CustomerRankingDTO();
+                dto.setName(c.getTenKH());
+                dto.setTotalSpent(totalSpent);
+                return dto;
+            })
+            .sorted((a, b) -> b.getTotalSpent().compareTo(a.getTotalSpent()))
+            .limit(5)
+            .collect(Collectors.toList());
+
+        for (int i = 0; i < result.size(); i++) {
+            result.get(i).setRank(i + 1);
+        }
 
         return result;
     }
 
-    //  Doanh thu tuần (Thứ 2 -> Chủ nhật tuần hiện tại)
+    // ========================
+    // 3. Doanh thu tuần hiện tại (Thứ 2 -> Chủ nhật)
+    // ========================
     @GetMapping("/weekly-revenue")
-    public List<Map<String,Object>> getWeeklyRevenue() {
+    public List<WeeklyRevenueDTO> getWeeklyRevenue() {
         LocalDate now = LocalDate.now();
         LocalDate monday = now.with(DayOfWeek.MONDAY);
 
-        List<Map<String,Object>> result = new ArrayList<>();
-        for(int i=0;i<7;i++) {
+        List<WeeklyRevenueDTO> result = new ArrayList<>();
+        for (int i = 0; i < 7; i++) {
             LocalDate day = monday.plusDays(i);
-            List<DonHangResponse> orders = donHangService.LayDonHangTheoKhoangNgay(day.atStartOfDay(), day.plusDays(1).atStartOfDay());
-            BigDecimal revenue = orders.stream()
-                                       .map(DonHangResponse::getTongTien)
-                                       .reduce(BigDecimal.ZERO, BigDecimal::add);
-            String dayName = switch(day.getDayOfWeek()) {
+            BigDecimal revenue = donHangService.LayDonHangTheoKhoangNgay(
+                    day.atStartOfDay(),
+                    day.plusDays(1).atStartOfDay()
+            ).stream()
+             .map(o -> o.getTongTien())
+             .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+            String dayName = switch (day.getDayOfWeek()) {
                 case MONDAY -> "Thứ Hai";
                 case TUESDAY -> "Thứ Ba";
                 case WEDNESDAY -> "Thứ Tư";
@@ -90,62 +98,77 @@ public class DashboardController {
                 case SATURDAY -> "Thứ Bảy";
                 case SUNDAY -> "Chủ Nhật";
             };
-            Map<String,Object> map = new HashMap<>();
-            map.put("day", dayName);
-            map.put("revenue", revenue);
-            result.add(map);
-        }
 
+            WeeklyRevenueDTO dto = new WeeklyRevenueDTO();
+            dto.setDay(dayName);
+            dto.setRevenue(revenue);
+            result.add(dto);
+        }
         return result;
     }
 
-    //  Sản phẩm sắp hết hàng (tồn kho <= 20)
+    // ========================
+    // 4. Sản phẩm sắp hết hàng (tồn kho <= 20)
+    // ========================
     @GetMapping("/low-stock")
-    public List<Map<String,Object>> getLowStockProducts() {
-    List<SanPhamResponse> allProducts = inventoryService.sanPhamConBan();
-
-    List<Map<String,Object>> lowStock = allProducts.stream()
-            .map(p -> {
-                int tonKho = ((Number) inventoryService.xemTonKho(p.getMaSP())).intValue(); // ép kiểu
-                Map<String,Object> map = new HashMap<>();
-                map.put("name", p.getTenSP());
-                map.put("stock", tonKho);
-                return map;
-            })
-            .filter(p -> (int)p.get("stock") <= 20) // lọc tồn kho <= 20
-            .collect(Collectors.toCollection(ArrayList::new));
-
-    return lowStock;
-}
-
-
-    //  Doanh thu theo category (tháng hiện tại)
-    @GetMapping("/revenue-by-category")
-    public List<Map<String,Object>> getRevenueByCategory() {
-        LocalDate now = LocalDate.now();
-        int month = now.getMonthValue();
-        int year = now.getYear();
-
-        List<Map<String,Object>> salesByCategory = thongKeService.sanPhamBanChayTheoThang(month, year);
-        Map<String, BigDecimal> categoryRevenue = new HashMap<>();
-        for(Map<String,Object> item: salesByCategory) {
-            String category = (String)item.get("category");
-            BigDecimal revenue = ((BigDecimal)item.get("revenue_amount"));
-            categoryRevenue.put(category, categoryRevenue.getOrDefault(category, BigDecimal.ZERO).add(revenue));
-        }
-
-        BigDecimal totalRevenue = categoryRevenue.values().stream().reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        List<Map<String,Object>> result = new ArrayList<>();
-        for(Map.Entry<String,BigDecimal> entry: categoryRevenue.entrySet()) {
-            BigDecimal percent = totalRevenue.compareTo(BigDecimal.ZERO)==0 ? BigDecimal.ZERO : entry.getValue().multiply(BigDecimal.valueOf(100)).divide(totalRevenue, 0, BigDecimal.ROUND_HALF_UP);
-            Map<String,Object> map = new HashMap<>();
-            map.put("category", entry.getKey());
-            map.put("revenue_percent", percent);
-            map.put("revenue_amount", entry.getValue());
-            result.add(map);
-        }
-
-        return result;
+    public List<LowStockProductDTO> getLowStockProducts() {
+        return inventoryService.sanPhamConBan().stream()
+                .map(p -> {
+                    int stock = ((Number) inventoryService.xemTonKho(p.getMaSP())).intValue();
+                    LowStockProductDTO dto = new LowStockProductDTO();
+                    dto.setName(p.getTenSP());
+                    dto.setStock(stock);
+                    return dto;
+                })
+                .filter(p -> p.getStock() <= 20)
+                .sorted(Comparator.comparingInt(LowStockProductDTO::getStock)) // sắp xếp tăng dần
+                .limit(5) // lấy tối đa 10 sản phẩm
+                .collect(Collectors.toList());
     }
+
+    // ========================
+    // 5. Doanh thu theo category (tháng hiện tại)
+    // ========================
+    @GetMapping("/revenue-by-category")
+public List<RevenueByCategoryDTO> getRevenueByCategory() {
+    // Lấy tất cả đơn hàng
+    List<DonHangResponse> allOrders = donHangService.layHetDonHang();
+
+    // Map từ maSP -> category
+    Map<String, String> productCategoryMap = inventoryService.sanPhamConBan().stream()
+            .collect(Collectors.toMap(p -> p.getMaSP(), p -> p.getPhanLoai()));
+
+    Map<String, BigDecimal> categoryRevenue = new HashMap<>();
+
+    for (DonHangResponse order : allOrders) {
+        for (ChiTietDonHangResponse ct : order.getChiTiet()) {
+            String category = productCategoryMap.getOrDefault(ct.getMaSP(), "Khác");
+            BigDecimal amount = ct.getThanhTien();
+            categoryRevenue.put(category, categoryRevenue.getOrDefault(category, BigDecimal.ZERO).add(amount));
+        }
+    }
+
+    BigDecimal totalRevenue = categoryRevenue.values().stream()
+            .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+    List<RevenueByCategoryDTO> result = categoryRevenue.entrySet().stream()
+            .map(entry -> {
+                BigDecimal percent = totalRevenue.compareTo(BigDecimal.ZERO) > 0
+                        ? entry.getValue().multiply(BigDecimal.valueOf(100))
+                          .divide(totalRevenue, 0, RoundingMode.HALF_UP)
+                        : BigDecimal.ZERO;
+
+                RevenueByCategoryDTO dto = new RevenueByCategoryDTO();
+                dto.setCategory(entry.getKey());
+                dto.setRevenueAmount(entry.getValue());
+                dto.setRevenuePercent(percent);
+                return dto;
+            })
+            .collect(Collectors.toList());
+
+    return result;
+}
+    
+
+
 }

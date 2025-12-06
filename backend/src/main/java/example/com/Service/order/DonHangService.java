@@ -11,7 +11,7 @@ import example.com.Dto.donhang.CapNhatDonHangRequest;
 
 public interface DonHangService {
     //CRUD 
-    DonHangResponse TaoDonHang(DonHangRequest donHangRequest);
+    void TaoDonHang(DonHangRequest donHangRequest);
     DonHangResponse CapNhatDonHang(CapNhatDonHangRequest request);
 
     // lấy đơn hàng, ct đơn hàng
@@ -20,7 +20,7 @@ public interface DonHangService {
     List<ChiTietDonHangResponse> LayChiTietDonHangTheoDonHang(String maDH);
     List<DonHangResponse> XemDonHangNVLap(String maNV);
     List<DonHangResponse> LayDonHangTheoKhoangNgay(LocalDateTime start, LocalDateTime end);
-    List<DonHangResponse> searchDonHang(String keyword);// lấy theo mã dh or kh or nhân viên
+    
 
     
 }

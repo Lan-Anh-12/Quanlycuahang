@@ -68,6 +68,7 @@ export default function ProductDetail() {
           onSave={(updated) => {
             setProduct(updated);
             setShowPopup(false);
+            alert("Cập nhật sản phẩm thành công!");
           }}
         />
       )}

@@ -22,4 +22,8 @@ public interface KhachHangRepository extends JpaRepository<KhachHang, String> {
 
     // Tìm theo địa chỉ
     List<KhachHang> findByDiaChiContainingIgnoreCase(String diaChi);
+    
+    // Tìm mã khách hàng lớn nhất
+    @Query("SELECT MAX(k.maKH) FROM KhachHang k")
+    String findLastMaKH();
 }

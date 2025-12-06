@@ -41,15 +41,7 @@ public class KhachHangServiceImpl implements KhachHangService {
     }
 
 
-    // CRUD
 
-    @Override
-    @Transactional
-    public KhachHangResponse taoKhachHang(KhachHangRequest req) {
-        KhachHang kh = convertToEntity(req);
-        KhachHang saved = khRepo.save(kh);
-        return convertToResponse(saved);
-    }
 
     @Override
     @Transactional
@@ -94,4 +86,26 @@ public class KhachHangServiceImpl implements KhachHangService {
                 .map(this::convertToResponse)
                 .collect(Collectors.toList());
     }
+
+   
+    @Override
+public List<KhachHangResponse> timKhachHangTheoTen(String tenKH) {
+    if (tenKH == null || tenKH.trim().isEmpty()) {
+        return List.of(); // không có từ khóa -> trả về rỗng
+    }
+
+    // Giả sử repository có method: List<KhachHang> findByTenKHContainingIgnoreCase(String tenKH)
+    List<KhachHang> list = khRepo.findByTenKHContainingIgnoreCase(tenKH.trim());
+
+    // Chuyển sang response
+    return list.stream()
+               .map(this::convertToResponse)
+               .collect(Collectors.toList());
+}
+
+    @Override
+    public long demTongKhachHang() {
+        return khRepo.count();
+    }
+
 }

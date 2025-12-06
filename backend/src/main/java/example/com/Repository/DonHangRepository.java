@@ -45,4 +45,11 @@ public interface DonHangRepository extends JpaRepository<DonHang, String> {
     @Query("SELECT d FROM DonHang d WHERE d.maDH LIKE %:keyword% OR d.maKH LIKE %:keyword% OR d.maNV LIKE %:keyword%")
     List<DonHang> searchByKeyword(@Param("keyword") String keyword);
 
+    // lấy mã dh lớn nhất
+    @Query(value = "SELECT MaDH FROM donhang ORDER BY MaDH DESC LIMIT 1", nativeQuery = true)
+    String findLastMaDH();
+
+    // Tổng số khách hàng đã mua đơn (distinct maKH)
+    @Query("SELECT COUNT(DISTINCT d.maKH) FROM DonHang d")
+    long totalCustomers();
 }

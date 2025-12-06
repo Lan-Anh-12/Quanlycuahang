@@ -1,14 +1,17 @@
-import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { authService } from "../services/authService";
+// src/context/AuthContext.tsx
+import { createContext, useContext, useState, useEffect,type ReactNode } from "react";
+import api from "../services/api";
 
 interface User {
   username: string;
+  maNV: string;
+  maTK: string;
 }
 
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (user: User, token: string) => void;
+  login: (username: string, password: string) => Promise<void>;
   logout: () => void;
 }
 
@@ -18,22 +21,49 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(localStorage.getItem("token"));
 
+  // Khi có token, load lại user info từ backend
   useEffect(() => {
-    if (token) {
+    if (!token) return;
+
+    const fetchUser = async () => {
       try {
-        // Giả sử token backend là JWT và có payload username
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setUser({ username: payload.username });
+        const usernamePayload = JSON.parse(atob(token.split(".")[1])).username;
+
+        // Lấy maTK và maNV từ backend
+        const [maTKRes, maNVRes] = await Promise.all([
+          api.get("/api/auth/me/matk", { headers: { Authorization: `Bearer ${token}` } }),
+          api.get("/api/auth/me/manv", { headers: { Authorization: `Bearer ${token}` } }),
+        ]);
+
+        setUser({
+          username: usernamePayload,
+          maTK: maTKRes.data,
+          maNV: maNVRes.data,
+        });
       } catch {
-        setUser({ username: "Người dùng" }); // fallback
+        setUser(null);
+        setToken(null);
+        localStorage.removeItem("token");
       }
-    }
+    };
+
+    fetchUser();
   }, [token]);
 
-  const login = (user: User, token: string) => {
-    setUser(user);
-    setToken(token);
-    localStorage.setItem("token", token);
+  // Login
+  const login = async (username: string, password: string) => {
+    const res = await api.post("/api/auth/login", { username, matkhau: password });
+    const jwtToken = res.data;
+    localStorage.setItem("token", jwtToken);
+    setToken(jwtToken);
+
+    // Lấy maTK và maNV ngay sau khi login
+    const [maTKRes, maNVRes] = await Promise.all([
+      api.get("/api/auth/me/matk", { headers: { Authorization: `Bearer ${jwtToken}` } }),
+      api.get("/api/auth/me/manv", { headers: { Authorization: `Bearer ${jwtToken}` } }),
+    ]);
+
+    setUser({ username, maTK: maTKRes.data, maNV: maNVRes.data });
   };
 
   const logout = () => {

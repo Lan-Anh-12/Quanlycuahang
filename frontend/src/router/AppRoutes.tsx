@@ -8,7 +8,7 @@ import HomePage from "../pages/HomePage";
 import ProductPage from "../pages/ProductPage";
 import ProductDetail from "../pages/ProductDetail";
 import CustomerManagement from "../pages/CustomerManagement";
-import EmployeeManagement from "../pages/EmployeeManagement";
+import CreateOrderPage from "../pages/CreateOrderPage";
 import OrderManagement from "../pages/OrderManagement";
 import ImportManagement from "../pages/ImportPage";
 // import CartPage from "../pages/CartPage";
@@ -23,7 +23,7 @@ const AppRoutes = () => {
         <Route path="sanpham" element={<ProductPage />} />
         <Route path="/products/:id" element={<ProductDetail />} />
         <Route path="/khachhang" element={<CustomerManagement />} />
-        <Route path="/nhanvien" element={<EmployeeManagement />} />
+        <Route path="/taodonhang" element={<CreateOrderPage />} />
         <Route path="/donhang" element={<OrderManagement />} />
         <Route path="/nhapkho" element={<ImportManagement />} />
       </Route>

@@ -50,3 +50,24 @@ export const getProductById = async (maSP: string): Promise<Product> => {
   if (!item) throw new Error("Sản phẩm không tồn tại");
   return item;
 };
+
+// tìm kiếm sản phẩm theo tên
+export const searchProductsByName = async (name: string): Promise<Product[]> => {
+  try {
+    const res = await api.get<Product[]>(`${API_URL}/sanpham/tim`, {
+      params: { tenSP: name }
+    });
+    return res.data;
+  } catch (error) {
+    console.error("Lỗi tìm sản phẩm:", error);
+    return [];
+  }
+
+  
+};
+
+// xóa sản phẩm
+export const deleteProduct = async (maSP: string): Promise<void> => {
+  await api.delete(`${API_URL}/sanpham/xoa/${maSP}`);
+};
+

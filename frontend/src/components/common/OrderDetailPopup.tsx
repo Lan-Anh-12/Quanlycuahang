@@ -1,4 +1,4 @@
-import React from "react";
+
 import type { OrderRecord, OrderDetail } from "../../services/orderService";
 
 interface Props {

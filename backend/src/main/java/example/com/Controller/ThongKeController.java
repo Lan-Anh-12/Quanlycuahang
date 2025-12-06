@@ -10,7 +10,6 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/thong-ke")
-@CrossOrigin(origins = "http://localhost:5173")
 public class ThongKeController {
 
     @Autowired

@@ -124,17 +124,21 @@ export default function OrderManagement() {
   };
 
   const openEditPopup = async (order: OrderRecord) => {
-    setEditTarget(order);
-    setEditDetails([]);
+  setEditTarget(null);     // đảm bảo popup chưa mở
+  setEditDetails([]);
 
-    try {
-      const details = await getOrderDetails(order.maDH);
-      setEditDetails(details);
-    } catch (err) {
-      console.error("Lỗi lấy chi tiết đơn hàng API. Dùng chi tiết Mock:", err);
-      setEditDetails(getMockDetails(order.maDH));
-    }
-  };
+  try {
+    const details = await getOrderDetails(order.maDH);
+    setEditDetails(details);
+    setEditTarget(order);  // mở popup sau khi đã có data
+  } catch (err) {
+    console.error("Lỗi lấy chi tiết đơn hàng API. Dùng mock:", err);
+    const mock = getMockDetails(order.maDH);
+    setEditDetails(mock);
+    setEditTarget(order);  // mở popup với dữ liệu mock
+  }
+};
+
 
   const closeDetailPopup = () => {
     setDetailTarget(null);

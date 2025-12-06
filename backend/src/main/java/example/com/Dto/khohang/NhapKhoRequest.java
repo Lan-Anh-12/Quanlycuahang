@@ -7,7 +7,6 @@ import lombok.Data;
 
 @Data
 public class NhapKhoRequest {
-  
     private String maNV;
     private String nhaCungCap;
     private LocalDateTime ngayNhap;

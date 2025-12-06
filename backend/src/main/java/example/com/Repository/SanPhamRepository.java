@@ -76,7 +76,12 @@ public interface SanPhamRepository extends JpaRepository<SanPham, String> {
     void updateTrangThai(@Param("maSP") String maSP,
                          @Param("trangThai") String trangThai);
 
-   @Query("SELECT MAX(s.maSP) FROM SanPham s")
+       // lấy mã sp lớn nhất
+   @Query(value = "SELECT MaSP FROM sanpham ORDER BY MaSP DESC LIMIT 1", nativeQuery = true)
    String findMaxMaSP();
+   
+       // lấy đơn giá theo mã sp
+   @Query("SELECT s.donGia FROM SanPham s WHERE s.maSP = :maSP")
+    BigDecimal findDonGiaByMaSP(String maSP);
 
 }

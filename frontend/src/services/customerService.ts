@@ -31,3 +31,9 @@ export const updateCustomer = async (
   const res = await api.put(`${API_URL}/capnhat/${maKH}`, data);
   return res.data;
 };
+
+// tìm kiếm khách hàng theo tên
+export const searchCustomersByName = async (tenKH: string): Promise<Customer[]> => {
+  const res = await api.get(`${API_URL}/timkiem`, { params: { tenKH } });
+  return res.data;
+};

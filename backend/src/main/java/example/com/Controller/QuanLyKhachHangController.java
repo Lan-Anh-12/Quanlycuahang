@@ -14,21 +14,14 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.util.List;
 import java.time.LocalDateTime;
 
-@CrossOrigin(origins = "http://localhost:5173")
+
 @RestController
 @RequestMapping("quanly/khachhang")
 public class QuanLyKhachHangController {
     @Autowired
     private KhachHangService khachHangService;
 
-    // tạo khách hàng
-    @PostMapping("/tao")
-    public ResponseEntity<KhachHangResponse> taoKhach(
-            @RequestBody KhachHangRequest request) {
 
-        KhachHangResponse created = khachHangService.taoKhachHang(request);
-        return ResponseEntity.ok(created);
-    }
     // cập nhật khách hàng
     @PutMapping("/capnhat/{maKH}")
     public ResponseEntity<KhachHangResponse> capNhatKhach(
@@ -59,6 +52,13 @@ public class QuanLyKhachHangController {
         return ResponseEntity.ok(khachHangService.layKhachHangTheoMa(maKH));
     }
 
+    // tìm khách theo tên
+    @GetMapping("/timkiem")
+    public ResponseEntity<List<KhachHangResponse>> timKhachTheoTen(
+            @RequestParam String tenKH) {
+        List<KhachHangResponse> list = khachHangService.timKhachHangTheoTen(tenKH);
+        return ResponseEntity.ok(list);
+    }
 
 
    

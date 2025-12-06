@@ -11,4 +11,5 @@ public class ChiTietDonHangResponse {
     private Integer soLuong;
     private BigDecimal donGia;
     private BigDecimal thanhTien;
+    private BigDecimal giaVon; // Thêm trường này để tính lợi nhuận
 }
