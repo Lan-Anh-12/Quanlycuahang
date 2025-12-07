@@ -112,6 +112,28 @@ public class InventoryServiceImpl implements InventoryService {
             return max + "-1";
         }
     }
+    private String generateNextMaCTNK() {
+        // find the maximum existing MaNK by lexicographical order and increment numeric
+        // suffix
+        List<CT_NhapKho> all = chiTietNhapKhoRepo.findAll();
+        String max = null;
+        for (CT_NhapKho n : all) {
+            if (n.getMaCTNK() == null)
+                continue;
+            if (max == null || n.getMaCTNK().compareTo(max) > 0)
+                max = n.getMaCTNK();
+        }
+        if (max == null)
+            return "CTNK000001";
+        try {
+            String digits = max.replaceAll("[^0-9]", "");
+            int next = Integer.parseInt(digits) + 1;
+            return String.format("CTNK%06d", next);
+        } catch (Exception e) {
+            // fallback
+            return max + "-1";
+        }
+    }
 
     @Override
     @Transactional
@@ -191,8 +213,7 @@ public class InventoryServiceImpl implements InventoryService {
 
             CT_NhapKho ct = new CT_NhapKho();
             // generate MaCTNK based on phieu id and index to ensure uniqueness
-            String ctId = savedPhieu.getMaNK() + "-" + java.util.UUID.randomUUID().toString().substring(0, 8);
-            ct.setMaCTNK(ctId);
+            ct.setMaCTNK(generateNextMaCTNK());
             ct.setMaNK(savedPhieu.getMaNK());
             ct.setMaSP(ctReq.getMaSP());
             ct.setSoLuong(ctReq.getSoLuong());
