@@ -131,7 +131,7 @@ export default function ProductPage() {
             value={sort}
             onChange={(e) => setSort(e.target.value as SortOption)}
           >
-            <option value="">--- Sắp xếp ---</option>
+            <option value=""> Sắp xếp</option>
             <option value="nameAsc">Tên (A-Z)</option>
             <option value="nameDesc">Tên (Z-A)</option>
             <option value="priceAsc">Giá tăng dần</option>

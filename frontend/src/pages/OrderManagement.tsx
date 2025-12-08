@@ -13,59 +13,20 @@ import OrderEditPopup from "../components/common/OrderEditPopup";
 // MOCK DATA (dùng khi API lỗi)
 // ====================================================================
 const MOCK_ORDERS: OrderRecord[] = [
-  {
-    maDH: "1",
-    maKH: "101",
-    maNV: "11",
-    ngayLap: "2025-01-01",
-    tongTien: 1500000,
-  },
-  {
-    maDH: "2",
-    maKH: "102",
-    maNV: "12",
-    ngayLap: "2025-01-05",
-    tongTien: 2300000,
-  },
-  {
-    maDH: "3",
-    maKH: "103",
-    maNV: "11",
-    ngayLap: "2025-01-06",
-    tongTien: 975000,
-  },
+  { maDH: "1", maKH: "101", maNV: "11", ngayLap: "2025-01-01", tongTien: 1500000 },
+  { maDH: "2", maKH: "102", maNV: "12", ngayLap: "2025-01-05", tongTien: 2300000 },
+  { maDH: "3", maKH: "103", maNV: "11", ngayLap: "2025-01-06", tongTien: 975000 },
 ];
 
 const getMockDetails = (orderId: string): OrderDetail[] => {
   if (orderId === "1") {
     return [
-      {
-        maCTDH: "1",
-        maDH: "1",
-        maSP: "201",
-        soLuong: 2,
-        donGia: 250000,
-        thanhTien: 500000,
-      },
-      {
-        maCTDH: "2",
-        maDH: "1",
-        maSP: "202",
-        soLuong: 1,
-        donGia: 1000000,
-        thanhTien: 1000000,
-      },
+      { maCTDH: "1", maDH: "1", maSP: "201", soLuong: 2, donGia: 250000, thanhTien: 500000 },
+      { maCTDH: "2", maDH: "1", maSP: "202", soLuong: 1, donGia: 1000000, thanhTien: 1000000 },
     ];
   }
   return [
-    {
-      maCTDH: "99",
-      maDH: orderId,
-      maSP: "299",
-      soLuong: 1,
-      donGia: 100000,
-      thanhTien: 100000,
-    },
+    { maCTDH: "99", maDH: orderId, maSP: "299", soLuong: 1, donGia: 100000, thanhTien: 100000 },
   ];
 };
 
@@ -112,17 +73,15 @@ export default function OrderManagement() {
 
     if (search.trim() !== "") {
       filtered = filtered.filter(
-        (o) =>
+        o =>
           o.maDH.includes(search) ||
           o.maKH.includes(search) ||
           o.maNV.includes(search)
       );
     }
 
-    if (sort === "dateAsc")
-      filtered.sort((a, b) => a.ngayLap.localeCompare(b.ngayLap));
-    else if (sort === "dateDesc")
-      filtered.sort((a, b) => b.ngayLap.localeCompare(a.ngayLap));
+    if (sort === "dateAsc") filtered.sort((a, b) => a.ngayLap.localeCompare(b.ngayLap));
+    else if (sort === "dateDesc") filtered.sort((a, b) => b.ngayLap.localeCompare(a.ngayLap));
 
     const total = filtered.length;
     const calculatedTotalPages = Math.ceil(total / pageSize);
@@ -165,20 +124,21 @@ export default function OrderManagement() {
   };
 
   const openEditPopup = async (order: OrderRecord) => {
-    setEditTarget(null); // đảm bảo popup chưa mở
-    setEditDetails([]);
+  setEditTarget(null);     // đảm bảo popup chưa mở
+  setEditDetails([]);
 
-    try {
-      const details = await getOrderDetails(order.maDH);
-      setEditDetails(details);
-      setEditTarget(order); // mở popup sau khi đã có data
-    } catch (err) {
-      console.error("Lỗi lấy chi tiết đơn hàng API. Dùng mock:", err);
-      const mock = getMockDetails(order.maDH);
-      setEditDetails(mock);
-      setEditTarget(order); // mở popup với dữ liệu mock
-    }
-  };
+  try {
+    const details = await getOrderDetails(order.maDH);
+    setEditDetails(details);
+    setEditTarget(order);  // mở popup sau khi đã có data
+  } catch (err) {
+    console.error("Lỗi lấy chi tiết đơn hàng API. Dùng mock:", err);
+    const mock = getMockDetails(order.maDH);
+    setEditDetails(mock);
+    setEditTarget(order);  // mở popup với dữ liệu mock
+  }
+};
+
 
   const closeDetailPopup = () => {
     setDetailTarget(null);
@@ -246,11 +206,8 @@ export default function OrderManagement() {
                 </td>
               </tr>
             ) : (
-              orders.map((o) => (
-                <tr
-                  key={o.maDH}
-                  className="border-b last:border-b-0 hover:bg-gray-50 transition"
-                >
+              orders.map(o => (
+                <tr key={o.maDH} className="border-b last:border-b-0 hover:bg-gray-50 transition">
                   <td className="p-3 font-mono">{o.maDH}</td>
                   <td className="p-3">{o.maKH}</td>
                   <td className="p-3">{o.maNV}</td>
@@ -262,14 +219,14 @@ export default function OrderManagement() {
                   <td className="p-3">
                     <div className="flex gap-2 justify-center">
                       <button
-                        className="bg-[#537B24] text-white px-3 py-1 rounded-lg text-sm hover:bg-[#44651d] transition shadow-md"
+                        className="bg-blue-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-blue-600 transition shadow-md"
                         onClick={() => openDetailPopup(o)}
                       >
                         Xem
                       </button>
 
                       <button
-                        className="bg-[#A7D388] text-[#537B24] px-3 py-1 rounded-lg text-sm hover:bg-[#94c274] transition shadow-md"
+                        className="bg-yellow-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-yellow-600 transition shadow-md"
                         onClick={() => openEditPopup(o)}
                       >
                         Sửa

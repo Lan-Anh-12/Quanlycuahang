@@ -101,7 +101,7 @@ export default function Header() {
           ${sidebarOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <div className="flex items-center justify-between px-4 py-3 bg-[#537B24]">
-          <img src="/logo.png" alt="logo" className="h-10" />
+          <img src="/logo.jpg" alt="logo" className="h-10" />
           <button onClick={() => setSidebarOpen(false)}>
             <IoClose size={28} />
           </button>

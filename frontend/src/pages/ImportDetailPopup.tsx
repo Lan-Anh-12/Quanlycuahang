@@ -1,5 +1,8 @@
 import React from "react";
-import type { NhapKhoResponse, CTNhapKhoResponse } from "../services/inventoryService";
+import type {
+  NhapKhoResponse,
+  CTNhapKhoResponse,
+} from "../services/inventoryService";
 
 interface Props {
   data?: {
@@ -10,13 +13,11 @@ interface Props {
 }
 
 export default function ImportDetailPopup({ data, onClose }: Props) {
-  // Nếu không có data hoặc detail, khởi tạo mặc định là mảng rỗng
   const detail = data?.detail ?? [];
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
       <div className="bg-white p-6 rounded-xl shadow-lg w-[520px] max-h-[85vh] overflow-y-auto">
-
         <h4 className="text-lg font-semibold mb-2 text-[#537B24]">
           Danh sách sản phẩm
         </h4>
@@ -46,7 +47,9 @@ export default function ImportDetailPopup({ data, onClose }: Props) {
                     <td className="p-2">{d.maSP}</td>
                     <td className="p-2">{d.tenSP}</td>
                     <td className="p-2">{d.soLuong}</td>
-                    <td className="p-2">{d.donGia.toLocaleString("vi-VN")} ₫</td>
+                    <td className="p-2">
+                      {d.donGia.toLocaleString("vi-VN")} ₫
+                    </td>
                     <td className="p-2 text-red-600 font-semibold">
                       {d.thanhTien.toLocaleString("vi-VN")} ₫
                     </td>
@@ -65,7 +68,6 @@ export default function ImportDetailPopup({ data, onClose }: Props) {
             Đóng
           </button>
         </div>
-
       </div>
     </div>
   );

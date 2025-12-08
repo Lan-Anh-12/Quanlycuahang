@@ -1,4 +1,3 @@
-
 import type { OrderRecord, OrderDetail } from "../../services/orderService";
 
 interface Props {
@@ -45,8 +44,12 @@ export default function OrderDetailPopup({ data, onClose }: Props) {
                   <tr key={d.maCTDH} className="border-b">
                     <td className="p-2">{d.maSP}</td>
                     <td className="p-2">{d.soLuong}</td>
-                    <td className="p-2">{d.donGia.toLocaleString("vi-VN")} ₫</td>
-                    <td className="p-2">{d.thanhTien.toLocaleString("vi-VN")} ₫</td>
+                    <td className="p-2">
+                      {d.donGia.toLocaleString("vi-VN")} ₫
+                    </td>
+                    <td className="p-2 text-red-600 font-semibold">
+                      {d.thanhTien.toLocaleString("vi-VN")} ₫
+                    </td>
                   </tr>
                 ))
               )}
