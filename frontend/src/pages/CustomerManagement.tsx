@@ -28,7 +28,6 @@ export default function CustomerManagement() {
     }
   };
 
-  // Load API 1 lần khi vào trang
   useEffect(() => {
     fetchData();
   }, []);
@@ -108,7 +107,7 @@ export default function CustomerManagement() {
       </div>
 
       {/* ==== TABLE ==== */}
-      <div className="bg-white rounded-xl shadow-md overflow-x-auto">
+      <div className="bg-white shadow-md overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-[#A7D388] text-[#537B24] font-semibold">
             <tr>
@@ -123,7 +122,10 @@ export default function CustomerManagement() {
 
           <tbody>
             {customers.map((c) => (
-              <tr key={c.maKH} className="border-b hover:bg-gray-100 transition">
+              <tr
+                key={c.maKH}
+                className="border-b hover:bg-gray-100 transition"
+              >
                 <td className="p-3">{c.maKH}</td>
                 <td className="p-3">{c.tenKH}</td>
                 <td className="p-3">{c.namSinh}</td>

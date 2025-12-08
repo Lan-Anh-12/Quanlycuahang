@@ -42,7 +42,8 @@ export default function ImportPage() {
       setAllImports([]);
       return;
     }
-    const apiData: NhapKhoResponse[] = await inventoryService.layTatCaDonNhapHang();
+    const apiData: NhapKhoResponse[] =
+      await inventoryService.layTatCaDonNhapHang();
     const converted: ImportRecord[] = apiData.map((i) => ({
       MaNK: String(i.maNK),
       MaNV: i.maNV,
@@ -104,26 +105,25 @@ export default function ImportPage() {
   // ACTIONS
   // ============================
   const handleView = async (MaNK: string) => {
-  if (!token) {
-    setShowLogin(true);
-    return;
-  }
+    if (!token) {
+      setShowLogin(true);
+      return;
+    }
 
-  try {
-    const resp = await inventoryService.layDonNhapHang(MaNK);
+    try {
+      const resp = await inventoryService.layDonNhapHang(MaNK);
 
-    // Chuẩn hóa dữ liệu cho popup
-    const viewData = {
-      record: resp,             // toàn bộ thông tin đơn
-      detail: resp.chiTiet ?? [], // chi tiết nếu có, hoặc [] nếu undefined
-    };
+      // Chuẩn hóa dữ liệu cho popup
+      const viewData = {
+        record: resp, // toàn bộ thông tin đơn
+        detail: resp.chiTiet ?? [], // chi tiết nếu có, hoặc [] nếu undefined
+      };
 
-    setViewTarget(viewData);
-  } catch (error) {
-    console.error("Lỗi khi fetch đơn nhập:", error);
-  }
-};
-
+      setViewTarget(viewData);
+    } catch (error) {
+      console.error("Lỗi khi fetch đơn nhập:", error);
+    }
+  };
 
   const handleSaveEdit = async (updated: ImportRecord) => {
     await inventoryService.updateNhapKho(updated.MaNK, {
@@ -185,7 +185,7 @@ export default function ImportPage() {
       </div>
 
       {/* TABLE */}
-      <div className="bg-white rounded-xl shadow-md">
+      <div className="bg-white shadow-md overflow-x-auto">
         <table className="w-full text-left">
           <thead className="bg-[#A7D388] text-[#537B24] font-semibold">
             <tr>
@@ -221,7 +221,9 @@ export default function ImportPage() {
                         setShowLogin(true);
                         return;
                       }
-                      const full = await inventoryService.layDonNhapHang(i.MaNK);
+                      const full = await inventoryService.layDonNhapHang(
+                        i.MaNK
+                      );
                       setEditTarget(full);
                     }}
                   >
@@ -235,21 +237,31 @@ export default function ImportPage() {
       </div>
 
       {/* PAGINATION */}
-      <div className="flex justify-center mt-4 gap-3">
+      <div className="flex justify-center items-center gap-4 mt-6">
         <button
-          className="px-3 py-1 border rounded"
           disabled={page === 1}
           onClick={() => setPage(page - 1)}
+          className={`px-4 py-2 rounded-md border ${
+            page === 1
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              : "bg-gray-100 hover:bg-gray-200"
+          }`}
         >
           Prev
         </button>
-        <span className="px-2 py-1">
-          {page} / {totalPages}
+
+        <span className="text-gray-600">
+          Trang <b>{page}</b> / {totalPages}
         </span>
+
         <button
-          className="px-3 py-1 border rounded"
           disabled={page === totalPages}
           onClick={() => setPage(page + 1)}
+          className={`px-4 py-2 rounded-md border ${
+            page === totalPages
+              ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+              : "bg-gray-100 hover:bg-gray-200"
+          }`}
         >
           Next
         </button>

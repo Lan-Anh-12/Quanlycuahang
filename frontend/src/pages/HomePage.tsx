@@ -51,11 +51,17 @@ const StatCard: React.FC<StatCardProps> = ({ title, value, color, to }) => (
 // Revenue Bar Chart
 // ==========================
 const RevenueBarChart: React.FC<{ data: WeeklyRevenueItem[] }> = ({ data }) => {
-  const formatCurrency = (value: number) => `${(value / 1_000_000).toFixed(0)}M`;
+  const formatCurrency = (value: number) =>
+    `${(value / 1_000_000).toFixed(0)}M`;
   return (
     <ResponsiveContainer width="100%" height={280}>
       <BarChart data={data} margin={{ top: 10, right: 10, left: 0, bottom: 5 }}>
-        <XAxis dataKey="day" axisLine={false} tickLine={false} className="text-sm" />
+        <XAxis
+          dataKey="day"
+          axisLine={false}
+          tickLine={false}
+          className="text-sm"
+        />
         <YAxis
           tickFormatter={formatCurrency}
           axisLine={false}
@@ -63,10 +69,21 @@ const RevenueBarChart: React.FC<{ data: WeeklyRevenueItem[] }> = ({ data }) => {
           className="text-sm"
         />
         <Tooltip
-          contentStyle={{ background: "rgba(255,255,255,0.9)", borderRadius: 6 }}
-          formatter={(value: number) => [`${value.toLocaleString("vi-VN")} VNĐ`, "Doanh thu"]}
+          contentStyle={{
+            background: "rgba(255,255,255,0.9)",
+            borderRadius: 6,
+          }}
+          formatter={(value: number) => [
+            `${value.toLocaleString("vi-VN")} VNĐ`,
+            "Doanh thu",
+          ]}
         />
-        <Bar dataKey="revenue" fill="#4CAF50" barSize={35} radius={[8, 8, 0, 0]} />
+        <Bar
+          dataKey="revenue"
+          fill="#4CAF50"
+          barSize={35}
+          radius={[8, 8, 0, 0]}
+        />
       </BarChart>
     </ResponsiveContainer>
   );
@@ -75,10 +92,18 @@ const RevenueBarChart: React.FC<{ data: WeeklyRevenueItem[] }> = ({ data }) => {
 // ==========================
 // Revenue Pie Chart
 // ==========================
-const CategoryPieChart: React.FC<{ data: RevenueByCategoryItem[] }> = ({ data }) => {
+const CategoryPieChart: React.FC<{ data: RevenueByCategoryItem[] }> = ({
+  data,
+}) => {
   const COLORS = ["#1976D2", "#4CAF50", "#FFC107", "#FF5722", "#9C27B0"];
   const renderCustomLabel = ({
-    cx, cy, midAngle, innerRadius, outerRadius, percent, index,
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    index,
   }: any) => {
     if (percent * 100 < 5) return null;
     const radius = innerRadius + (outerRadius - innerRadius) * 1.2;
@@ -93,7 +118,7 @@ const CategoryPieChart: React.FC<{ data: RevenueByCategoryItem[] }> = ({ data })
         dominantBaseline="central"
         className="text-sm font-semibold"
       >
-        {`${data[index].category} (${data[index].revenue_percent}%)`} 
+        {`${data[index].category} (${data[index].revenue_percent}%)`}
       </text>
     );
   };
@@ -113,12 +138,19 @@ const CategoryPieChart: React.FC<{ data: RevenueByCategoryItem[] }> = ({ data })
           label={renderCustomLabel}
         >
           {data.map((_, i) => (
-            <Cell key={i} fill={COLORS[i % COLORS.length]} stroke="#fff" strokeWidth={2} />
+            <Cell
+              key={i}
+              fill={COLORS[i % COLORS.length]}
+              stroke="#fff"
+              strokeWidth={2}
+            />
           ))}
         </Pie>
         <Tooltip
           formatter={(value: number, _name, props: any) => [
-            `${value}% (${props.payload.revenue_amount.toLocaleString("vi-VN")} VNĐ)`,
+            `${value}% (${props.payload.revenue_amount.toLocaleString(
+              "vi-VN"
+            )} VNĐ)`,
             props.payload.category,
           ]}
         />
@@ -130,21 +162,29 @@ const CategoryPieChart: React.FC<{ data: RevenueByCategoryItem[] }> = ({ data })
 // ==========================
 // Customer ranking table
 // ==========================
-const CustomerRankingTable: React.FC<{ data: CustomerRankingItem[] }> = ({ data }) => (
+const CustomerRankingTable: React.FC<{ data: CustomerRankingItem[] }> = ({
+  data,
+}) => (
   <div className="overflow-x-auto">
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
           <th className="px-6 py-3 text-left text-xs font-medium">Hạng</th>
-          <th className="px-6 py-3 text-left text-xs font-medium">Tên Khách hàng</th>
-          <th className="px-6 py-3 text-right text-xs font-medium">Tổng chi tiêu</th>
+          <th className="px-6 py-3 text-left text-xs font-medium">
+            Tên Khách hàng
+          </th>
+          <th className="px-6 py-3 text-right text-xs font-medium">
+            Tổng chi tiêu
+          </th>
         </tr>
       </thead>
       <tbody className="bg-white divide-y divide-gray-100">
         {data.map((c) => (
           <tr
             key={c.rank}
-            className={`${c.rank <= 3 ? "bg-yellow-50/50" : "hover:bg-gray-50"} transition`}
+            className={`${
+              c.rank <= 3 ? "bg-yellow-50/50" : "hover:bg-gray-50"
+            } transition`}
           >
             <td className="px-6 py-3 font-semibold">{c.rank}</td>
             <td className="px-6 py-3">{c.name}</td>
@@ -166,7 +206,9 @@ const LowStockTable: React.FC<{ data: LowStockProduct[] }> = ({ data }) => (
     <table className="min-w-full divide-y divide-gray-200">
       <thead className="bg-gray-50">
         <tr>
-          <th className="px-6 py-3 text-left text-xs font-medium">Tên Sản phẩm</th>
+          <th className="px-6 py-3 text-left text-xs font-medium">
+            Tên Sản phẩm
+          </th>
           <th className="px-6 py-3 text-right text-xs font-medium">Tồn kho</th>
         </tr>
       </thead>
@@ -174,7 +216,9 @@ const LowStockTable: React.FC<{ data: LowStockProduct[] }> = ({ data }) => (
         {data.map((p, i) => (
           <tr
             key={i}
-            className={`${p.stock <= 10 ? "bg-red-50/50" : "hover:bg-gray-50"} transition`}
+            className={`${
+              p.stock <= 10 ? "bg-red-50/50" : "hover:bg-gray-50"
+            } transition`}
           >
             <td className="px-6 py-3 font-medium">{p.name}</td>
             <td
@@ -199,8 +243,12 @@ export default function Dashboard() {
   const [weeklyProfit, setWeeklyProfit] = useState<number | string>("...");
   const [weeklyRevenue, setWeeklyRevenue] = useState<WeeklyRevenueItem[]>([]);
   const [topCustomers, setTopCustomers] = useState<CustomerRankingItem[]>([]);
-  const [lowStockProducts, setLowStockProducts] = useState<LowStockProduct[]>([]);
-  const [revenueByCategory, setRevenueByCategory] = useState<RevenueByCategoryItem[]>([]);
+  const [lowStockProducts, setLowStockProducts] = useState<LowStockProduct[]>(
+    []
+  );
+  const [revenueByCategory, setRevenueByCategory] = useState<
+    RevenueByCategoryItem[]
+  >([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -251,62 +299,80 @@ export default function Dashboard() {
 
   if (loading)
     return (
-      <div className="p-10 text-center text-xl font-medium">Đang tải dữ liệu…</div>
+      <div className="p-10 text-center text-xl font-medium">
+        Đang tải dữ liệu…
+      </div>
     );
 
   return (
     <div className="p-6 md:p-8 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-8">Tổng quan hoạt động</h1>
 
-      {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <StatCard
-          title="Tổng số Khách hàng"
-          value={totalCustomers}
-          color={LIGHT_GREEN_BG}
-          to="/khachhang"
-        />
-      </div>
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ====== CỘT TRÁI (chiếm 2/3) ====== */}
+        <div className="lg:col-span-2 space-y-6">
+          {/* Tổng số khách hàng */}
+          <StatCard
+            title="Tổng số Khách hàng"
+            value={totalCustomers}
+            color={LIGHT_GREEN_BG}
+            to="/khachhang"
+          />
 
-      {/* Revenue + Top customers */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-6">📈 Doanh thu 7 ngày gần nhất</h2>
-          {weeklyRevenue.length > 0 ? (
-            <RevenueBarChart data={weeklyRevenue} />
-          ) : (
-            <p className="text-center py-10 text-gray-500">Không có dữ liệu doanh thu</p>
-          )}
+          {/* Doanh thu 7 ngày gần nhất */}
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-xl font-bold mb-6">
+              📈 Doanh thu 7 ngày gần nhất
+            </h2>
+            {weeklyRevenue.length > 0 ? (
+              <RevenueBarChart data={weeklyRevenue} />
+            ) : (
+              <p className="text-center py-10 text-gray-500">
+                Không có dữ liệu doanh thu
+              </p>
+            )}
+          </div>
+
+          {/* Sản phẩm sắp hết hàng */}
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-xl font-bold mb-6">⚠️ Sản phẩm sắp hết hàng</h2>
+            {lowStockProducts.length > 0 ? (
+              <LowStockTable data={lowStockProducts} />
+            ) : (
+              <p className="text-center py-5 text-gray-500">
+                Không có sản phẩm tồn kho thấp
+              </p>
+            )}
+          </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-6">🏆 Top 5 Khách hàng</h2>
-          {topCustomers.length > 0 ? (
-            <CustomerRankingTable data={topCustomers} />
-          ) : (
-            <p className="text-center py-5 text-gray-500">Không có dữ liệu khách hàng</p>
-          )}
-        </div>
-      </div>
+        {/* ====== CỘT PHẢI (chiếm 1/3) ====== */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Top 5 khách hàng */}
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-xl font-bold mb-6">🏆 Top 5 Khách hàng</h2>
+            {topCustomers.length > 0 ? (
+              <CustomerRankingTable data={topCustomers} />
+            ) : (
+              <p className="text-center py-5 text-gray-500">
+                Không có dữ liệu khách hàng
+              </p>
+            )}
+          </div>
 
-      {/* Low stock + Category revenue */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-6">⚠️ Sản phẩm sắp hết hàng</h2>
-          {lowStockProducts.length > 0 ? (
-            <LowStockTable data={lowStockProducts} />
-          ) : (
-            <p className="text-center py-5 text-gray-500">Không có sản phẩm tồn kho thấp</p>
-          )}
-        </div>
-
-        <div className="bg-white p-6 rounded-xl shadow">
-          <h2 className="text-xl font-bold mb-6">📊 Doanh thu theo phân loại</h2>
-          {revenueByCategory.length > 0 ? (
-            <CategoryPieChart data={revenueByCategory} />
-          ) : (
-            <p className="text-center py-10 text-gray-500">Không có dữ liệu phân loại</p>
-          )}
+          {/* Doanh thu theo phân loại */}
+          <div className="bg-white p-6 rounded-xl shadow">
+            <h2 className="text-xl font-bold mb-6">
+              📊 Doanh thu theo phân loại
+            </h2>
+            {revenueByCategory.length > 0 ? (
+              <CategoryPieChart data={revenueByCategory} />
+            ) : (
+              <p className="text-center py-10 text-gray-500">
+                Không có dữ liệu phân loại
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
